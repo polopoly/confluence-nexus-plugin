@@ -2,4 +2,3 @@ target/
 .settings/
 .classpath
 .project
-src/main/resources/confluence-nexus-config.properties
