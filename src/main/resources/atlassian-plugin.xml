@@ -1,0 +1,20 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <resource key="icon" name="icon/" type="download" location="images/icon/" />
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+    </plugin-info>
+    <macro name="nplugin-meta" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-meta-macro" icon="/download/resources/com.atex.confluence.plugin.confluence-nexus-plugin/icon/nexus.jpg">
+    <description>Macro that will populate maven metadata to confluence </description> 
+    <resource type="i18n" name="i18n" location="languages/languages" />
+    <!-- Defines the parameters this macro may consume. -->
+    <parameters>
+        <parameter name="artifactId" type="string"/>
+        <parameter name="groupId" type="string"/>
+    </parameters>	
+    </macro>
+    <!-- macro name="nplugin-other" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-macro">
+    <description>Other macro that will populate maven metadata to confluence </description> 
+    </macro-->
+</atlassian-plugin>
