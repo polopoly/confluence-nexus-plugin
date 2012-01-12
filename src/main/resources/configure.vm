@@ -7,22 +7,22 @@
   </head>
   <body>
   <div>
-    <form id="admin" class="aui">
+    <form id="admin" class="aui" method="POST">
       <div>
         <label for="url">$i18n.getText("nplugin-meta.admin.url")</label>
-        <input type="text" id="url" name="url" class="text">
+        <input type="text" id="url" name="url" class="text" value="$!configuration.urlString" />
       </div>
       <div>
         <label for="username">$i18n.getText("nplugin-meta.admin.username")</label>
-        <input type="text" id="username" name="username" class="text">
+        <input type="text" id="username" name="username" class="text" value="$!configuration.username" >
       </div>
       <div>
         <label for="password">$i18n.getText("nplugin-meta.admin.password")</label>
-        <input type="password" id="password" name="password" class="text">
+        <input type="password" id="password" name="password" class="text" />
       </div>
       <div>
         <label for="groupId">$i18n.getText("nplugin-meta.admin.groupId")</label>
-        <input type="text" id="groupId" name="groupId" class="text">
+        <input type="text" id="groupId" name="groupId" class="text" value="$!configuration.groupId" >
       </div>
       <div>
         <input type="submit" value="$i18n.getText("nplugin-meta.admin.save")" class="button">
