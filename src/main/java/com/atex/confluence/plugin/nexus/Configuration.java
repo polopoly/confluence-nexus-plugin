@@ -1,11 +1,7 @@
 package com.atex.confluence.plugin.nexus;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
-
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -16,37 +12,28 @@ import org.apache.commons.httpclient.auth.AuthScope;
  */
 public class Configuration {
     
-    private String propertiesPath = "confluence-nexus-config.properties";
-    private String password;
     private String username;
+    private String password;
     private String groupId;
     private String urlString;
     private URL url;
     
+    public static final String NAME_SPACE = Configuration.class.getName() + ".";
+    public static final String USERNAME = NAME_SPACE + "username";
+    public static final String PASSWORD = NAME_SPACE + "password";
+    public static final String URL = NAME_SPACE + "urlString";
+    public static final String GROUPID = NAME_SPACE + "groupId";
+    
     public Configuration() {
-        init();
+        
     }
     
-    // only allow package visibility for testing purpose
-    Configuration(String propertiesPath) {
-        this.propertiesPath = propertiesPath;
-        init();
-    }
-    
-    protected void init() {
-        InputStream is = getClass().getClassLoader().getResourceAsStream(propertiesPath);
-        Properties properties = new Properties();
-        try {
-            properties.load(is);
-            urlString = properties.getProperty("url");
-            url = toURL(urlString);
-            username = properties.getProperty("username");
-            password = properties.getProperty("password");
-            groupId = properties.getProperty("groupId");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+    public Configuration(String urlString, String username, String password, String groupId) throws MalformedURLException {
+        this.urlString = urlString;
+        this.username = username;
+        this.password = password;
+        this.groupId = groupId;
+        this.url = toURL(urlString);
     }
     
     public Credentials getCredentials() {
@@ -62,6 +49,18 @@ public class Configuration {
     }
     
     public String getURL() {
+        return urlString;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public String getUrlString() {
         return urlString;
     }
     

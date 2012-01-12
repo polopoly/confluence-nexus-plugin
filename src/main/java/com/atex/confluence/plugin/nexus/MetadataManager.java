@@ -1,5 +1,6 @@
 package com.atex.confluence.plugin.nexus;
 
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,9 +30,12 @@ import org.xml.sax.SAXException;
  */
 public class MetadataManager {
     
-    private static final Configuration CONFIGURATION = new Configuration();
+    // use static variable to cache the configuration across all class instances
+    private static Configuration configuration;
     
-    public MetadataManager() { }
+    public MetadataManager(Configuration configuration) {
+        setConfiguration(configuration);
+    }
     
     /**
      * Search maven model based on groupId
@@ -77,7 +81,7 @@ public class MetadataManager {
     
     public List<Repository> getRepositories() throws IOException, ParserConfigurationException, SAXException {
         List<Repository> repositories = new ArrayList<Repository>();
-        HttpMethod get = doGetHttpMethod(CONFIGURATION.getSearchRepositoriesURI());
+        HttpMethod get = doGetHttpMethod(configuration.getSearchRepositoriesURI());
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = builderFactory.newDocumentBuilder();
         Document dom;
@@ -95,10 +99,10 @@ public class MetadataManager {
     
     private synchronized Response getResponse(String groupId) throws IOException {
         if(groupId == null || groupId.trim().isEmpty()) {
-            groupId = CONFIGURATION.getGroupId();
+            groupId = configuration.getGroupId();
         }
         
-        HttpMethod get = doGetHttpMethod(CONFIGURATION.getSearchURI() + "?g=" + groupId);
+        HttpMethod get = doGetHttpMethod(configuration.getSearchURI() + "?g=" + groupId);
         return parseInputStreamToResponse(get.getResponseBodyAsStream());
     }
     
@@ -183,7 +187,7 @@ public class MetadataManager {
     private HttpMethod doGetHttpMethod(String url) throws HttpException, IOException {
         HttpMethod get = new GetMethod(url);
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(CONFIGURATION.getAuthScope(), CONFIGURATION.getCredentials());
+        client.getState().setCredentials(configuration.getAuthScope(), configuration.getCredentials());
         int status = client.executeMethod(get);
         if(status != HttpStatus.SC_OK) {
             String message = "Failed to request url " + url + ", returned status: " + status;
@@ -205,5 +209,9 @@ public class MetadataManager {
             }
         }
         return url;
+    }
+    
+    public static void setConfiguration(Configuration configuration) {
+        MetadataManager.configuration = configuration;
     }
 }
