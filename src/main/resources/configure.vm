@@ -1,29 +1,30 @@
 <html>
   <head>
-    <title>NPlugin Configuration</title>
+    <title>$i18n.getText("com.atex.confluence.plugin.confluence-nexus-plugin.nplugin-meta.label")</title>
     <meta name="decorator" content="atl.admin" />
     <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
+    $webResourceManager.requireResource("com.atex.confluence.plugin.confluence-nexus-plugin:resources")
   </head>
   <body>
     <form id="admin" class="aui">
       <div>
-        <label for="url">URL</label>
+        <label for="url">$i18n.getText("nplugin-meta.admin.url")</label>
         <input type="text" id="url" name="url" class="text">
       </div>
       <div>
-        <label for="username">Username</label>
+        <label for="username">$i18n.getText("nplugin-meta.admin.username")</label>
         <input type="text" id="username" name="username" class="text">
       </div>
       <div>
-        <label for="password">Password</label>
+        <label for="nexuspassword">$i18n.getText("nplugin-meta.admin.password")</label>
         <input type="password" id="password" name="password" class="text">
       </div>
       <div>
-        <label for="groupId">Default Group ID</label>
+        <label for="groupId">$i18n.getText("nplugin-meta.admin.groupId")</label>
         <input type="text" id="groupId" name="groupId" class="text">
       </div>
       <div>
-        <input type="submit" value="Save" class="button">
+        <input type="submit" value="$i18n.getText("nplugin-meta.admin.save")" class="button">
       </div>
     </form>
   </body>

@@ -59,6 +59,12 @@
       <artifactId>maven-model</artifactId>
       <version>3.0.3</version>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <build>
@@ -88,6 +94,7 @@
     <confluence.version>3.4.3</confluence.version>
     <confluence.data.version>3.1</confluence.data.version>
     <amps.version>3.7.2</amps.version>
+    <refapp.version>2.3.10</refapp.version>
   </properties>
   <repositories>
     <repository>
