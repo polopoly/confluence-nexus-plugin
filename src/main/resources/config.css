@@ -1,0 +1,19 @@
+
+form div {
+	float:center;
+	display:block;
+	position:relative;
+	top:auto;
+}
+
+form div label {
+	display:inline;
+	background-color:#f0f0f0;
+}
+
+form div input.text {
+	display:block;
+}
+form div input.password {
+	display:block;
+}
