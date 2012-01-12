@@ -4,7 +4,9 @@
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="configure.url">/plugins/servlet/nplugin/configure</param>
     </plugin-info>
+    <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />
     <macro name="nplugin-meta" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-meta-macro" icon="/download/resources/com.atex.confluence.plugin.confluence-nexus-plugin/icon/nexus.jpg">
     <description>Macro that will populate maven metadata to confluence </description> 
     <resource type="i18n" name="i18n" location="languages/languages" />
@@ -17,4 +19,7 @@
     <!-- macro name="nplugin-other" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-macro">
     <description>Other macro that will populate maven metadata to confluence </description> 
     </macro-->
+    <servlet key="configuration-servlet" class="com.atex.confluence.plugin.nexus.ConfigurationServlet">
+      <url-pattern>/nplugin/configure</url-pattern>
+    </servlet>
 </atlassian-plugin>

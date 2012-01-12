@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>NPlugin Configuration</title>
+    <meta name="decorator" content="atl.admin" />
+    <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
+  </head>
+  <body>
+    <form id="admin" class="aui">
+      <div>
+        <label for="url">URL</label>
+        <input type="text" id="url" name="url" class="text">
+      </div>
+      <div>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" class="text">
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="text">
+      </div>
+      <div>
+        <label for="groupId">Default Group ID</label>
+        <input type="text" id="groupId" name="groupId" class="text">
+      </div>
+      <div>
+        <input type="submit" value="Save" class="button">
+      </div>
+    </form>
+  </body>
+</html>
