@@ -72,27 +72,34 @@ public class ConfigurationServlet extends HttpServlet {
         final String groupId = (String) req.getParameter("groupId");
         Map<String, Object> models = new HashMap<String, Object>();
         if (!isValid(urlString)) {
-            models.put("urlString", "URL String is required");
+            models.put("urlString", "error");
         }
         if (!isValid(username)) {
-            models.put("username", "Username is required");
+            models.put("username", "error");
         }
         if (!isValid(password)) {
-            models.put("password", "Password is required");
+            models.put("password", "error");
         }
         if (!isValid(groupId)) {
-            models.put("groupId", "Default Group ID is required");
+            models.put("groupId", "error");
         }
 
         Configuration configuration = null;
         try {
-            configuration = new Configuration(urlString, username, password, groupId);
+            configuration = new Configuration();
+            configuration.setUsername(username);
+            configuration.setPassword(password);
+            configuration.setGroupId(groupId);
+            // this is last one to set, which might throw exception
+            configuration.setURL(urlString);
         } catch (MalformedURLException e) {
             models.put("urlString", "Invalid URL format");
         }
         // some error occured
         if (!models.isEmpty()) {
             resp.setContentType(CONTENT_TYPE);
+            // add to models for display to avoid re-input data
+            models.put("configuration", configuration);
             renderer.render(VIEW, models, resp.getWriter());
         } else {
 

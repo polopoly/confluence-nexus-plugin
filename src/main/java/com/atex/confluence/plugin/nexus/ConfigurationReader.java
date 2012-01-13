@@ -25,11 +25,8 @@ public class ConfigurationReader implements TransactionCallback<Configuration> {
         try {
             PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
             String urlString = (String)settings.get(URL);
-            System.out.println(urlString);
             String username = (String)settings.get(USERNAME);
-            System.out.println(username);
             String password = (String)settings.get(PASSWORD);
-            System.out.println(password);
             String groupId = (String)settings.get(GROUPID);
             return new Configuration(urlString, username, password, groupId);
         } catch (MalformedURLException ex) {
