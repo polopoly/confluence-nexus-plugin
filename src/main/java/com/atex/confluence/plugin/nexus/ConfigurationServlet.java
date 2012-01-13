@@ -1,6 +1,5 @@
 package com.atex.confluence.plugin.nexus;
 
-import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -9,12 +8,10 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import electric.util.log.Log;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -93,7 +90,7 @@ public class ConfigurationServlet extends HttpServlet {
             // this is last one to set, which might throw exception
             configuration.setURL(urlString);
         } catch (MalformedURLException e) {
-            models.put("urlString", "Invalid URL format");
+            models.put("urlString", "error");
         }
         // some error occured
         if (!models.isEmpty()) {
