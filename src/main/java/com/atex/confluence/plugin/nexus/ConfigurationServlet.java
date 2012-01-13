@@ -48,7 +48,7 @@ public class ConfigurationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = userManager.getRemoteUsername(req);
         if (username != null && !userManager.isSystemAdmin(username)) {
-            redirectToLogin(req, resp);
+            redirectToMain(req, resp);
             return;
         } else if (username==null) {
             redirectToLogin(req, resp);
@@ -130,6 +130,10 @@ public class ConfigurationServlet extends HttpServlet {
         }
     }
     
+    private void redirectToMain(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.sendRedirect(loginUriProvider.getLoginUri(URI.create("")).toASCIIString());
+    }
+   
     private void redirectToLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.sendRedirect(loginUriProvider.getLoginUri(getUri(req)).toASCIIString());
     }
