@@ -48,20 +48,41 @@ public class Configuration {
         return groupId;
     }
     
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+    
     public String getURL() {
         return urlString;
+    }
+    
+    public void setURL(String urlString) throws MalformedURLException {
+        this.urlString = urlString;
+        this.url = toURL(urlString);
     }
     
     public String getUsername() {
         return username;
     }
     
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
     public String getPassword() {
         return password;
     }
     
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     public String getUrlString() {
         return urlString;
+    }
+    
+    public void setUrlString(String urlString) {
+        this.urlString = urlString;
     }
     
     public String getSearchURI() {
