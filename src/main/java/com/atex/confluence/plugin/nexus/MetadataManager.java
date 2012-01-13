@@ -184,7 +184,7 @@ public class MetadataManager {
         return poms;
     }
     
-    private HttpMethod doGetHttpMethod(String url) throws HttpException, IOException {
+    private HttpMethod doGetHttpMethod(String url) throws IOException {
         HttpMethod get = new GetMethod(url);
         HttpClient client = new HttpClient();
         client.getState().setCredentials(configuration.getAuthScope(), configuration.getCredentials());
@@ -192,10 +192,12 @@ public class MetadataManager {
         if(status != HttpStatus.SC_OK) {
             String message = "Failed to request url " + url + ", returned status: " + status;
             if(status == HttpStatus.SC_UNAUTHORIZED) {
-                message += ", Reason: Unauthorized";
+                throw new UnAuthorizeException();
+            } else if (status == HttpStatus.SC_NOT_FOUND) {
+                throw new AddressNotFoundException();
             }
             throw new IOException(message);
-        }
+        } 
         return get;
     }
     

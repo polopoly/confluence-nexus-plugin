@@ -66,79 +66,94 @@ public class MavenInfoMacro extends BaseMacro {
                 artifactId = (String) params.get(key.toString());
             }
         }
-        try {
-            if (artifactId != null) {
-                result.append(getPluginMetaDataTable(groupId, artifactId));
-            } else {
-                result.append(getPluginListTable(groupId));
-            }
-        } catch (IOException e) {
-            throw new MacroException(e);
+        if (artifactId != null) {
+            result.append(getPluginMetaDataTable(groupId, artifactId));
+        } else {
+            result.append(getPluginListTable(groupId));
         }
         return subRenderer.render(result.toString(), renderContext);
     }
 
-    private String getPluginListTable(String groupId) throws IOException {
-        List<Model> models = metadataManager.getMetadatas(groupId);
+    private String getPluginListTable(String groupId) {
         StringBuffer result = new StringBuffer();
+        List<Model> models;
+        try {
+            models = metadataManager.getMetadatas(groupId);
 
-        result.append("h3. Plugin List \n");
-        result.append("|| Name || Artifact Id || Version || Description || \n");
-        for (Model model : models) {
-            result.append("| [");
-            result.append(getName(model));
-            result.append("|");
-            result.append((model.getUrl() != null) ? model.getUrl() : toValidUrlName(getName(model)));
-            result.append("]");
-            result.append("|");
-            result.append(model.getArtifactId());
-            result.append("|");
-            result.append(getVersion(model));
-            result.append("|");
-            result.append(parseString(model.getDescription()));
-            result.append(" | \n ");
+            result.append("h3. Plugin List \n");
+            result.append("|| Name || Artifact Id || Version || Description || \n");
+            for (Model model : models) {
+                result.append("| [");
+                result.append(getName(model));
+                result.append("|");
+                result.append((model.getUrl() != null) ? model.getUrl() : toValidUrlName(getName(model)));
+                result.append("]");
+                result.append("|");
+                result.append(model.getArtifactId());
+                result.append("|");
+                result.append(getVersion(model));
+                result.append("|");
+                result.append(parseString(model.getDescription()));
+                result.append(" | \n ");
+            }
+            result.append("\n");
+            if (models.isEmpty()) {
+                return "{warning}No plugins available{warning}";
+            } else {
+                return result.toString();
+            }
+        } catch (AddressNotFoundException e) {
+            result.append("{warning}Please make sure the Nexus url is correctly configured{warning}");
+        } catch (UnAuthorizeException e) {
+            result.append("{warning}Please make sure the credential for Nexus is correctly configured{warning}");
+        } catch (IOException e) {
+            result.append("{warning}Error retrieving metadata{warning}");
         }
-        result.append("\n");
-        if (models.isEmpty()) {
-            return "{warning}No plugins available{warning}";
-        } else {
-            return result.toString();
-        }
+        return result.toString();
     }
 
     // Date: Jan 10, lee
     // 1. set excerpt hidden:true
     // 2. replace new line with empty String 
     // 3. remove comment
-    private String getPluginMetaDataTable(String groupId, String artifactId) throws IOException {
-        Model model = metadataManager.getMetadata(groupId, artifactId);
+    private String getPluginMetaDataTable(String groupId, String artifactId) {
+        Model model;
         StringBuffer result = new StringBuffer();
-        if (model != null) {
-            IssueManagement issueManagement = model.getIssueManagement();
-            Scm scm = model.getScm();
-            result.append(" h3. Metadata for ");
-            result.append(parseString(model.getName()));
-            result.append("\n || Group Id | ");
-            result.append(getGroupId(model));
-            result.append(" || Artifact Id | ");
-            result.append(model.getArtifactId());
-            result.append("| \n || Latest Release | ");
-            result.append(getVersion(model));
-            result.append(" || Source Code | ");
-            result.append((scm != null) ? parseString(scm.getUrl()) : "");
-            result.append("| \n || Developers | ");
-            result.append(getDeveloperInfo(model.getDevelopers()));
-            result.append(" || Issue Tracking | ");
-            result.append(getIssueInfo(issueManagement));
-            result.append(" | \n ");
-            result.append(" h5. Description \n ");
-            result.append(" {excerpt:hidden=true} ");
-            result.append(parseString(model.getDescription()).replaceAll("\n", " "));
-            result.append(" {excerpt} \n ");
-            result.append(parseString(model.getDescription()));
-
-        } else {
-            result.append("{warning}Metadata model not available{warning}");
+        try {
+            model = metadataManager.getMetadata(groupId, artifactId);
+            if (model != null) {
+                IssueManagement issueManagement = model.getIssueManagement();
+                Scm scm = model.getScm();
+                result.append(" h3. Metadata for ");
+                result.append(parseString(model.getName()));
+                result.append("\n || Group Id | ");
+                result.append(getGroupId(model));
+                result.append(" || Artifact Id | ");
+                result.append(model.getArtifactId());
+                result.append("| \n || Latest Release | ");
+                result.append(getVersion(model));
+                result.append(" || Source Code | ");
+                result.append((scm != null) ? parseString(scm.getUrl()) : "");
+                result.append("| \n || Developers | ");
+                result.append(getDeveloperInfo(model.getDevelopers()));
+                result.append(" || Issue Tracking | ");
+                result.append(getIssueInfo(issueManagement));
+                result.append(" | \n ");
+                result.append(" h5. Description \n ");
+                result.append(" {excerpt:hidden=true} ");
+                result.append(parseString(model.getDescription()).replaceAll("\n", " "));
+                result.append(" {excerpt} \n ");
+                result.append(parseString(model.getDescription()));
+                
+            } else {
+                result.append("{warning}Metadata model not available{warning}");
+            }
+        } catch (AddressNotFoundException e) {
+            result.append("{warning}Please make sure the Nexus url is correctly configured{warning}");
+        } catch (UnAuthorizeException e) {
+            result.append("{warning}Please make sure the credential for Nexus is correctly configured{warning}");
+        } catch (IOException e) {
+            result.append("{warning}Error retrieving metadata{warning}");
         }
         return result.toString();
     }
