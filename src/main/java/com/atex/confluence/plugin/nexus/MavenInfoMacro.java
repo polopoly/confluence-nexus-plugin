@@ -149,8 +149,11 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getLicenses(licenses));
                 result.append("| \n || CI Environment | ");
                 result.append(getCIEnv(cim));
-                result.append(" || Maven Repo | ");
-                result.append(getMavenRepo(groupId, artifactId));
+                result.append(" | \n \n ");
+                result.append(" \n || Maven Repositories | ");
+                result.append(getMavenRepo(model));
+                result.append(" | \n || Maven Site | ");
+                result.append(getLinkToSite(model));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
@@ -196,6 +199,17 @@ public class MavenInfoMacro extends BaseMacro {
     }
     
     private String getLinkToSite(Model model) {
+        String artifactId = model.getArtifactId();
+        String url = getNexusUrl(model) + "/" + artifactId + "-" + getVersion(model) + "-site.jar" + "_/index.html" ;
+        return url;
+    }
+
+    private String getMavenRepo(Model model) {
+        String url = getNexusUrl(model) ;
+        return url;
+    }
+    
+    private String getNexusUrl(Model model) {
         DistributionManagement distribution = model.getDistributionManagement();
         if(distribution != null) {
             Site site = distribution.getSite();
@@ -215,15 +229,8 @@ public class MavenInfoMacro extends BaseMacro {
         if(!url.endsWith("/")) {
             url = url + "/";
         }
-        url = url + groupId + "/" + artifactId + "/" + model.getVersion() + "/" + model.getArtifactId() + "-" + getVersion(model) + "-site.jar" + "_/index.html";
+        url = url + groupId + "/" + artifactId + "/" + model.getVersion() + "/" ;
         return url;
-        
-    }
-
-    private String getMavenRepo(String groupId, String artifactId) {
-        StringBuffer result = new StringBuffer();
-        
-        return result.toString();
     }
 
     private String getLicenses(List<License> licenses) {
