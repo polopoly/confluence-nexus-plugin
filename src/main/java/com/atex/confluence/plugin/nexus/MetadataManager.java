@@ -49,7 +49,7 @@ public class MetadataManager {
     }
     
     /**
-     * Search maven model based on groupId
+     * Search maven model based on artifactId using default groupId
      * @param artifactId of the maven to be search
      * @return model of the maven, else null when not found
      * @throws IOException when search failed
@@ -59,7 +59,7 @@ public class MetadataManager {
     }
     
     /**
-     * Search maven model based on groupId
+     * Search maven model based on groupId and artifactId
      * @param groupId of the artifact to be search
      * @param artifactId of the maven to be search
      * @return model of the maven, else null when not found

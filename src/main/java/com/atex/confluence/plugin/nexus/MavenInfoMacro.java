@@ -194,6 +194,31 @@ public class MavenInfoMacro extends BaseMacro {
         }
         return result.toString();
     }
+    
+    private String getLinkToSite(Model model) {
+        DistributionManagement distribution = model.getDistributionManagement();
+        if(distribution != null) {
+            Site site = distribution.getSite();
+            if(site != null && site.getUrl() != null) {
+                return site.getUrl();
+            }
+        }
+        
+        // no url specified
+        // construct one
+        // url format will be according to format https://github.com/polopoly/nexus-jar-reader-plugin
+        DeploymentRepository repository = distribution.getRepository();
+        
+        String groupId = getGroupId(model).replace(".", "/");
+        String artifactId = model.getArtifactId().replace(".", "/");
+        String url = repository.getUrl();
+        if(!url.endsWith("/")) {
+            url = url + "/";
+        }
+        url = url + groupId + "/" + artifactId + "/" + model.getVersion() + "/" + model.getArtifactId() + "-" + getVersion(model) + "-site.jar" + "_/index.html";
+        return url;
+        
+    }
 
     private String getMavenRepo(String groupId, String artifactId) {
         StringBuffer result = new StringBuffer();

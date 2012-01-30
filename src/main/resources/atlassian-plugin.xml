@@ -12,13 +12,13 @@
     <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate"/>
     <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
     <macro name="nplugin-meta" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-meta-macro" icon="/download/resources/com.atex.confluence.plugin.confluence-nexus-plugin/icon/nexus.jpg">
-    <description>Macro that will populate maven metadata to confluence </description> 
+    <description>Macro that will populate maven metadata to confluence </description>
     <resource type="i18n" name="i18n" location="languages/languages" />
     <!-- Defines the parameters this macro may consume. -->
     <parameters>
         <parameter name="artifactId" type="string"/>
         <parameter name="groupId" type="string"/>
-    </parameters>	
+    </parameters>
     </macro>
     <!-- macro name="nplugin-other" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-macro">
     <description>Other macro that will populate maven metadata to confluence </description> 
@@ -29,5 +29,5 @@
     <web-resource name="Admin Web Resources" key="resources">
       <dependency>com.atlassian.auiplugin:ajs</dependency>
       <resource type="download" name="config.css" location="config.css"/>
-    </web-resource>    
+    </web-resource>
 </atlassian-plugin>
