@@ -138,7 +138,7 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append("| \n || Latest Release | ");
                 result.append(getVersion(model));
                 result.append(" || Source Code | ");
-                result.append((scm != null) ? parseString(scm.getUrl()) : "");
+                result.append(getSourceCode(scm));
                 result.append("| \n || Developers | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
                 result.append(" || Issue Tracking | ");
@@ -147,12 +147,10 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getOrganization(org));
                 result.append(" || License | ");
                 result.append(getLicenses(licenses));
-                result.append("| \n || Source Code | ");
-                result.append(getSourceCode(model));
-                result.append(" || Maven Repo | ");
-                result.append(getMavenRepo(groupId, artifactId));
                 result.append("| \n || CI Environment | ");
                 result.append(getCIEnv(cim));
+                result.append(" || Maven Repo | ");
+                result.append(getMavenRepo(groupId, artifactId));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
@@ -173,63 +171,52 @@ public class MavenInfoMacro extends BaseMacro {
         return result.toString();
     }
 
-    private Object getCIEnv(CiManagement cim) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private Object getSourceCode(Model model) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private Object getOrganization(Organization org) {
-        String result = NO_INFO;
-        if (org !=null) {
-            if (org.getUrl() !=null) {
-                result = org.getUrl();
-            }
+    private String getCIEnv(CiManagement cim) {
+        StringBuffer result = new StringBuffer();
+        if (cim !=null) {
+            result.append(parseString(cim.getUrl()));
         }
-        return result;
+        return result.toString();
     }
 
-    private Object getMavenRepo(String groupId, String artifactId) {
-        // TODO Auto-generated method stub
-        return null;
+    private String getSourceCode(Scm scm) {
+        StringBuffer result = new StringBuffer();
+        if (scm !=null) {
+            result.append(parseString(scm.getUrl()));
+        }
+        return result.toString();
     }
 
-    private Object getLicenses(List<License> licenses) {
+    private String getOrganization(Organization org) {
+        StringBuffer result = new StringBuffer();
+        if (org !=null) {
+            result.append(parseUrlLabel(org.getName(), org.getUrl()));
+        }
+        return result.toString();
+    }
+
+    private String getMavenRepo(String groupId, String artifactId) {
+        StringBuffer result = new StringBuffer();
+        
+        return result.toString();
+    }
+
+    private String getLicenses(List<License> licenses) {
         StringBuffer result = new StringBuffer();
         for (int licCount = 0; licCount < licenses.size(); licCount++) {
             License lic = licenses.get(licCount);
             if (licCount != 0) {
                 result.append("\n");
             }
-            String licUrl = lic.getUrl();
-            if (licUrl != null) {
-                result.append(licUrl);
-            } else if (lic.getName() !=null) {
-                result.append(lic.getName());
-            } else {
-                result.append(NO_INFO);
-            }
-
+            result.append(parseUrlLabel(lic.getName(), lic.getUrl()));
         }
         return result.toString();
     }
 
-    private String getIssueInfo(IssueManagement issueManagement) {
+    private String getIssueInfo(IssueManagement issMan) {
         StringBuffer result = new StringBuffer();
-        if (issueManagement != null) {
-            if (issueManagement.getUrl() != null) {
-                result.append("[");
-                result.append(parseString(issueManagement.getSystem()));
-                result.append("|");
-                result.append(parseString(issueManagement.getUrl()));
-                result.append("]");
-            } else {
-                result.append(parseString(issueManagement.getSystem()));
-            }
+        if (issMan != null) {
+            result.append(parseUrlLabel(issMan.getSystem(), issMan.getUrl()));
         }
         return result.toString();
     }
@@ -288,6 +275,24 @@ public class MavenInfoMacro extends BaseMacro {
             return "";
         }
         return field;
+    }
+    
+    private String parseUrlLabel(String rawLabel, String rawUrl) {
+        StringBuffer result = new StringBuffer();
+        String label = parseString(rawLabel);
+        String url = parseString(rawUrl);               
+        if (label.length() > 0 && url.length() > 0) {
+            result.append("[");
+            result.append(label);
+            result.append("|");
+            result.append(url);
+            result.append("]");
+        } else if (label.length() > 0 && url.length() == 0) {
+            result.append(label);
+        } else if (label.length() == 0 && url.length() > 0) {
+            result.append(url);
+        }
+        return result.toString();
     }
 
     /**
