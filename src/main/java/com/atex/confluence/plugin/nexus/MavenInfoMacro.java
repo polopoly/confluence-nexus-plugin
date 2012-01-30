@@ -18,6 +18,8 @@ public class MavenInfoMacro extends BaseMacro {
     // You just need to know *what* you want to inject and use.
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
+    private final static String NO_INFO = "";
+    
 
     public MavenInfoMacro(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, SubRenderer subRenderer) {
         this.subRenderer = subRenderer;
@@ -124,6 +126,9 @@ public class MavenInfoMacro extends BaseMacro {
             if (model != null) {
                 IssueManagement issueManagement = model.getIssueManagement();
                 Scm scm = model.getScm();
+                Organization org = model.getOrganization();
+                List<License> licenses = model.getLicenses();
+                CiManagement cim = model.getCiManagement();
                 result.append(" h3. Metadata for ");
                 result.append(parseString(model.getName()));
                 result.append("\n || Group Id | ");
@@ -138,6 +143,16 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getDeveloperInfo(model.getDevelopers()));
                 result.append(" || Issue Tracking | ");
                 result.append(getIssueInfo(issueManagement));
+                result.append("| \n || Organization | ");
+                result.append(getOrganization(org));
+                result.append(" || License | ");
+                result.append(getLicenses(licenses));
+                result.append("| \n || Source Code | ");
+                result.append(getSourceCode(model));
+                result.append(" || Maven Repo | ");
+                result.append(getMavenRepo(groupId, artifactId));
+                result.append("| \n || CI Environment | ");
+                result.append(getCIEnv(cim));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
@@ -154,6 +169,51 @@ public class MavenInfoMacro extends BaseMacro {
             result.append("{warning}Please make sure the credential for Nexus is correctly configured{warning}");
         } catch (IOException e) {
             result.append("{warning}Error retrieving metadata{warning}");
+        }
+        return result.toString();
+    }
+
+    private Object getCIEnv(CiManagement cim) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Object getSourceCode(Model model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Object getOrganization(Organization org) {
+        String result = NO_INFO;
+        if (org !=null) {
+            if (org.getUrl() !=null) {
+                result = org.getUrl();
+            }
+        }
+        return result;
+    }
+
+    private Object getMavenRepo(String groupId, String artifactId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Object getLicenses(List<License> licenses) {
+        StringBuffer result = new StringBuffer();
+        for (int licCount = 0; licCount < licenses.size(); licCount++) {
+            License lic = licenses.get(licCount);
+            if (licCount != 0) {
+                result.append("\n");
+            }
+            String licUrl = lic.getUrl();
+            if (licUrl != null) {
+                result.append(licUrl);
+            } else if (lic.getName() !=null) {
+                result.append(lic.getName());
+            } else {
+                result.append(NO_INFO);
+            }
+
         }
         return result.toString();
     }
