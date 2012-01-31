@@ -52,7 +52,7 @@ public class MavenInfoMacro extends BaseMacro {
     @SuppressWarnings("rawtypes")
     @Override
     public String execute(Map params, String body, RenderContext renderContext) throws MacroException {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         Object keyList[] = null;
         String groupId = null;
         String artifactId = null;
@@ -77,14 +77,14 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getPluginListTable(String groupId) {
-        StringBuffer result = new StringBuffer();
-        List<Model> models;
+        StringBuilder result = new StringBuilder();
+        List<ExtendedModel> models;
         try {
             models = metadataManager.getMetadatas(groupId);
 
             result.append("h3. Plugin List \n");
             result.append("|| Name || Artifact Id || Version || Description || \n");
-            for (Model model : models) {
+            for (ExtendedModel model : models) {
                 result.append("| [");
                 result.append(getName(model));
                 result.append("|");
@@ -114,13 +114,9 @@ public class MavenInfoMacro extends BaseMacro {
         return result.toString();
     }
 
-    // Date: Jan 10, lee
-    // 1. set excerpt hidden:true
-    // 2. replace new line with empty String 
-    // 3. remove comment
     private String getPluginMetaDataTable(String groupId, String artifactId) {
-        Model model;
-        StringBuffer result = new StringBuffer();
+        ExtendedModel model;
+        StringBuilder result = new StringBuilder();
         try {
             model = metadataManager.getMetadata(groupId, artifactId);
             if (model != null) {
@@ -136,11 +132,11 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(" || Artifact Id | ");
                 result.append(model.getArtifactId());
                 result.append("| \n || Latest Release | ");
-                result.append(getVersion(model));
-                result.append(" || Source Code | ");
-                result.append(getSourceCode(scm));
-                result.append("| \n || Developers | ");
+                result.append(getVersions(model));
+                result.append(" || Developers | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
+                result.append("| \n || Source Code | ");
+                result.append(getSourceCode(scm));
                 result.append(" || Issue Tracking | ");
                 result.append(getIssueInfo(issueManagement));
                 result.append("| \n || Organization | ");
@@ -149,11 +145,10 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getLicenses(licenses));
                 result.append("| \n || CI Environment | ");
                 result.append(getCIEnv(cim));
-                result.append(" | \n \n ");
-                result.append(" \n || Maven Repositories | ");
-                result.append(getMavenRepo(model));
+                result.append(" || Maven Repositories | ");
+                result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
                 result.append(" | \n || Maven Site | ");
-                result.append(getLinkToSite(model));
+                result.append(parseUrlLabel("Link to Maven Site", getLinkToSite(model)));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
@@ -175,15 +170,26 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getCIEnv(CiManagement cim) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (cim !=null) {
-            result.append(parseString(cim.getUrl()));
+            result.append(parseUrlLabel(cim.getSystem(), cim.getUrl()));
         }
         return result.toString();
     }
 
+    private String getVersions(ExtendedModel model) {
+        StringBuilder builder = new StringBuilder();
+        for(Artifact a: model.getArtifacts()) {
+            if(builder.length() != 0) {
+                builder.append("\n");
+            }
+            builder.append(a.getVersion());
+        }
+        
+        return builder.toString();
+    }
     private String getSourceCode(Scm scm) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (scm !=null) {
             result.append(parseString(scm.getUrl()));
         }
@@ -191,7 +197,7 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getOrganization(Organization org) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (org !=null) {
             result.append(parseUrlLabel(org.getName(), org.getUrl()));
         }
@@ -235,7 +241,7 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getLicenses(List<License> licenses) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int licCount = 0; licCount < licenses.size(); licCount++) {
             License lic = licenses.get(licCount);
             if (licCount != 0) {
@@ -247,7 +253,7 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getIssueInfo(IssueManagement issMan) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (issMan != null) {
             result.append(parseUrlLabel(issMan.getSystem(), issMan.getUrl()));
         }
@@ -255,7 +261,7 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getDeveloperInfo(List<Developer> developers) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int devCount = 0; devCount < developers.size(); devCount++) {
             Developer dev = developers.get(devCount);
             if (devCount != 0) {
@@ -311,7 +317,7 @@ public class MavenInfoMacro extends BaseMacro {
     }
     
     private String parseUrlLabel(String rawLabel, String rawUrl) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         String label = parseString(rawLabel);
         String url = parseString(rawUrl);               
         if (label.length() > 0 && url.length() > 0) {

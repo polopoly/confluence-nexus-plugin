@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,6 +21,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -33,6 +37,10 @@ public class MetadataManager {
     // use static variable to cache the configuration across all class instances
     private static Configuration configuration;
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetadataManager.class);
+    
+    
+    
     public MetadataManager(Configuration configuration) {
         setConfiguration(configuration);
     }
@@ -43,7 +51,7 @@ public class MetadataManager {
      * @return list of null safe model
      * @throws IOException when search failed
      */
-    public List<Model> getMetadatas(String groupId) throws IOException {
+    public List<ExtendedModel> getMetadatas(String groupId) throws IOException {
         Response result = getResponse(groupId);
         return getPoms(result.getLatestReleases(), result.getRepositories());
     }
@@ -60,20 +68,22 @@ public class MetadataManager {
     
     /**
      * Search maven model based on groupId and artifactId
-     * @param groupId of the artifact to be search
+     * @param groupId of the artifacts to be search
      * @param artifactId of the maven to be search
      * @return model of the maven, else null when not found
      * @throws IOException when search failed
      */
-    public Model getMetadata(String groupId, String artifactId) throws IOException {
+    public ExtendedModel getMetadata(String groupId, String artifactId) throws IOException {
         Response result = getResponse(groupId);
         Artifact artifact = result.getByArtifactId(artifactId);
         if(artifact == null) {
             return null;
         }
-        List<Model> models = getPoms(Arrays.asList(artifact), result.getRepositories());
+        List<ExtendedModel> models = getPoms(Arrays.asList(artifact), result.getRepositories());
         if(models != null && models.size() == 1) {
-            return models.get(0);
+            ExtendedModel model = models.get(0);
+            model.setArtifacts(result.getListByArtifactId(artifactId));
+            return model;
         } else {
             return null;
         }
@@ -123,11 +133,11 @@ public class MetadataManager {
             }
             response.getRepositories().addAll(getRepositories());
         } catch (SAXException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage(), e);
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage(), e);
         }
         return response;
     }
@@ -164,8 +174,8 @@ public class MetadataManager {
         return textVal;
     }
     
-    private List<Model> getPoms(List<Artifact> artifacts, List<Repository> repositories) throws IOException {
-        List<Model> poms = new ArrayList<Model>();
+    private List<ExtendedModel> getPoms(List<Artifact> artifacts, List<Repository> repositories) throws IOException {
+        List<ExtendedModel> poms = new ArrayList<ExtendedModel>();
         for(Artifact artifact: artifacts) {
             if(artifact == null) {
                 continue;
@@ -174,11 +184,14 @@ public class MetadataManager {
             MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
             try {
                 Model model = mavenXpp3Reader.read(get.getResponseBodyAsStream());
-                poms.add(model);
+                poms.add(new ExtendedModel(model, artifacts));
             } catch (IllegalStateException e) {
-                e.printStackTrace();
+                LOGGER.warn(e.getMessage(), e);
             } catch (XmlPullParserException e) {
-                e.printStackTrace();
+                LOGGER.warn(e.getMessage(), e);
+            } catch (IOException e) {
+                LOGGER.warn(e.getMessage(), e);
+                throw e;
             }
         }
         return poms;
@@ -197,7 +210,7 @@ public class MetadataManager {
                 throw new AddressNotFoundException();
             }
             throw new IOException(message);
-        } 
+        }
         return get;
     }
     
