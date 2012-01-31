@@ -230,7 +230,7 @@ public class MavenInfoMacro extends BaseMacro {
         if(!url.endsWith("/")) {
             url = url + "/";
         }
-        url = url + groupId + "/" + artifactId + "/" + model.getVersion() + "/" ;
+        url = url + groupId + "/" + artifactId + "/" + getVersion(model) + "/" ;
         return url;
     }
 
