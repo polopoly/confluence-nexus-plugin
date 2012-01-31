@@ -132,11 +132,11 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(" || Artifact Id | ");
                 result.append(model.getArtifactId());
                 result.append("| \n || Latest Release | ");
-                result.append(getVersion(model));
-                result.append(" || Source Code | ");
-                result.append(getSourceCode(scm));
-                result.append("| \n || Developers | ");
+                result.append(getVersions(model));
+                result.append(" || Developers | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
+                result.append("| \n || Source Code | ");
+                result.append(getSourceCode(scm));
                 result.append(" || Issue Tracking | ");
                 result.append(getIssueInfo(issueManagement));
                 result.append("| \n || Organization | ");
@@ -145,7 +145,6 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getLicenses(licenses));
                 result.append("| \n || CI Environment | ");
                 result.append(getCIEnv(cim));
-//                result.append(" | \n \n ");
                 result.append(" || Maven Repositories | ");
                 result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
                 result.append(" | \n || Maven Site | ");
@@ -178,6 +177,17 @@ public class MavenInfoMacro extends BaseMacro {
         return result.toString();
     }
 
+    private String getVersions(ExtendedModel model) {
+        StringBuilder builder = new StringBuilder();
+        for(Artifact a: model.getArtifacts()) {
+            if(builder.length() != 0) {
+                builder.append("\n");
+            }
+            builder.append(a.getVersion());
+        }
+        
+        return builder.toString();
+    }
     private String getSourceCode(Scm scm) {
         StringBuilder result = new StringBuilder();
         if (scm !=null) {

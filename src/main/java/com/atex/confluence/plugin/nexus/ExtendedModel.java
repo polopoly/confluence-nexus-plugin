@@ -82,7 +82,7 @@ public class ExtendedModel extends Model{
                 try {
                     Float v1 = Float.parseFloat(o1.getVersion());
                     Float v2 = Float.parseFloat(o2.getVersion());
-                    return v1.compareTo(v2);
+                    return -v1.compareTo(v2);
                 } catch (NumberFormatException e) {
                     return 0;
                 }
