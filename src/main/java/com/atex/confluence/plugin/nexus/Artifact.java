@@ -125,7 +125,7 @@ public class Artifact implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         
         buffer.append("[groupId: ")
             .append(getGroupId())
@@ -142,5 +142,18 @@ public class Artifact implements Serializable {
             .append("]");
         
         return buffer.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Artifact) {
+            Artifact another = (Artifact) obj;
+            if(getGroupId().equals(another.getGroupId()) 
+                    && getArtifactId().equals(another.getArtifactId()) 
+                    && getVersion().equals(another.getVersion())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
