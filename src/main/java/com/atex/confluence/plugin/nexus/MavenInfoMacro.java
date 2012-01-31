@@ -147,9 +147,9 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getCIEnv(cim));
 //                result.append(" | \n \n ");
                 result.append(" || Maven Repositories | ");
-                result.append(parseUrlLabel("Link", getMavenRepo(model)));
+                result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
                 result.append(" | \n || Maven Site | ");
-                result.append(parseUrlLabel("Link", getLinkToSite(model)));
+                result.append(parseUrlLabel("Link to Maven Site", getLinkToSite(model)));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
@@ -173,7 +173,7 @@ public class MavenInfoMacro extends BaseMacro {
     private String getCIEnv(CiManagement cim) {
         StringBuilder result = new StringBuilder();
         if (cim !=null) {
-            result.append(parseString(cim.getUrl()));
+            result.append(parseUrlLabel(cim.getSystem(), cim.getUrl()));
         }
         return result.toString();
     }
