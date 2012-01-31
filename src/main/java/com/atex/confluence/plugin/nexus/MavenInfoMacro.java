@@ -207,7 +207,7 @@ public class MavenInfoMacro extends BaseMacro {
             }
         }        
         String artifactId = model.getArtifactId();
-        String url = getNexusUrl(model) + "/" + artifactId + "-" + getVersion(model) + "-site.jar" + "_/index.html" ;
+        String url = getNexusUrl(model) + artifactId + "-" + getVersion(model) + "-site.jar" + "_/index.html" ;
         return url;
     }
 
