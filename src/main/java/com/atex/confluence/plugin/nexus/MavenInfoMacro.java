@@ -199,6 +199,13 @@ public class MavenInfoMacro extends BaseMacro {
     }
     
     private String getLinkToSite(Model model) {
+        DistributionManagement distribution = model.getDistributionManagement();
+        if(distribution != null) {
+            Site site = distribution.getSite();
+            if(site != null && site.getUrl() != null) {
+                return site.getUrl();
+            }
+        }        
         String artifactId = model.getArtifactId();
         String url = getNexusUrl(model) + "/" + artifactId + "-" + getVersion(model) + "-site.jar" + "_/index.html" ;
         return url;
@@ -211,13 +218,7 @@ public class MavenInfoMacro extends BaseMacro {
     
     private String getNexusUrl(Model model) {
         DistributionManagement distribution = model.getDistributionManagement();
-        if(distribution != null) {
-            Site site = distribution.getSite();
-            if(site != null && site.getUrl() != null) {
-                return site.getUrl();
-            }
-        }
-        
+       
         // no url specified
         // construct one
         // url format will be according to format https://github.com/polopoly/nexus-jar-reader-plugin
