@@ -64,4 +64,14 @@ public class Response {
         // not found
         return null;
     }
+    
+    public List<Artifact> getListByArtifactId(String artifactId) {
+        List<Artifact> artifacts = new ArrayList<Artifact>();
+        for(Artifact artifact: getReleasedArtifacts()) {
+            if(artifact.getArtifactId().equals(artifactId)) {
+                artifacts.add(artifact);
+            }
+        }
+        return artifacts;
+    }
 }
