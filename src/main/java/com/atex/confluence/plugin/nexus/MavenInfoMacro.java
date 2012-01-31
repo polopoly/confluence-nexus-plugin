@@ -145,11 +145,11 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getLicenses(licenses));
                 result.append("| \n || CI Environment | ");
                 result.append(getCIEnv(cim));
-                result.append(" | \n \n ");
-                result.append(" \n || Maven Repositories | ");
-                result.append(getMavenRepo(model));
+//                result.append(" | \n \n ");
+                result.append(" || Maven Repositories | ");
+                result.append(parseUrlLabel("Link", getMavenRepo(model)));
                 result.append(" | \n || Maven Site | ");
-                result.append(getLinkToSite(model));
+                result.append(parseUrlLabel("Link", getLinkToSite(model)));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
