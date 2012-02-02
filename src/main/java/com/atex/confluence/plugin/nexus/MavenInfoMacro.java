@@ -83,7 +83,7 @@ public class MavenInfoMacro extends BaseMacro {
             models = metadataManager.getMetadatas(groupId);
 
             result.append("h3. Plugin List \n");
-            result.append("|| Name || Artifact Id || Version || Description || \n");
+            result.append("|| Name || Artifact Id || Latest Version || Description || \n");
             for (ExtendedModel model : models) {
                 result.append("| [");
                 result.append(getName(model));
@@ -131,7 +131,7 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getGroupId(model));
                 result.append(" || Artifact Id | ");
                 result.append(model.getArtifactId());
-                result.append("| \n || Latest Release | ");
+                result.append("| \n || Release(s) | ");
                 result.append(getVersions(model));
                 result.append(" || Developers | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
