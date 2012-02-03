@@ -1,5 +1,6 @@
 package com.atex.confluence.plugin.nexus;
 
+import com.atlassian.extras.common.org.springframework.util.StringUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.SubRenderer;
@@ -136,18 +137,20 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getDeveloperInfo(model.getDevelopers()));
                 result.append("| \n || Source Code | ");
                 result.append(getSourceCode(scm));
-                result.append(" || Issue Tracking | ");
-                result.append(getIssueInfo(issueManagement));
+                result.append(" || Source Code(Read Only) | ");
+                result.append(getConnection(scm));
                 result.append("| \n || Organization | ");
                 result.append(getOrganization(org));
-                result.append(" || License | ");
-                result.append(getLicenses(licenses));
+                result.append(" || Issue Tracking | ");
+                result.append(getIssueInfo(issueManagement));
                 result.append("| \n || CI Environment | ");
                 result.append(getCIEnv(cim));
-                result.append(" || Maven Repositories | ");
-                result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
+                result.append(" || License | ");
+                result.append(getLicenses(licenses));
                 result.append(" | \n || Maven Site | ");
                 result.append(parseUrlLabel("Link to Maven Site", getLinkToSite(model)));
+                result.append(" || Maven Repositories | ");
+                result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
                 result.append(" | \n ");
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
@@ -166,6 +169,19 @@ public class MavenInfoMacro extends BaseMacro {
             result.append("{warning}Error retrieving metadata{warning}");
         }
         return result.toString();
+    }
+
+    private String getConnection(Scm scm) {
+        String connection = scm.getConnection();
+        if(connection != null && !connection.trim().isEmpty()) {
+            if(StringUtils.countOccurrencesOf(connection, ":") > 2) {
+                int index = connection.indexOf(":");
+                connection = connection.substring(index + 1);
+                index = connection.indexOf(":");
+                connection = connection.substring(index + 1);
+            }
+        }
+        return parseUrlLabel("Read Only", connection);
     }
 
     private String getCIEnv(CiManagement cim) {
