@@ -28,7 +28,8 @@ public class ConfigurationReader implements TransactionCallback<Configuration> {
             String username = (String)settings.get(USERNAME);
             String password = (String)settings.get(PASSWORD);
             String groupId = (String)settings.get(GROUPID);
-            return new Configuration(urlString, username, password, groupId);
+            Boolean generateLink = Boolean.valueOf((String) settings.get(GENERATE_LINK));
+            return new Configuration(urlString, username, password, groupId, generateLink == null? false: generateLink.booleanValue());
         } catch (MalformedURLException ex) {
             // invalid url
             Logger.getLogger(ConfigurationReader.class.getName()).log(Level.SEVERE, ex.getMessage());

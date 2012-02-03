@@ -14,11 +14,8 @@ import org.apache.maven.model.*;
 
 public class MavenInfoMacro extends BaseMacro {
 
-    // We just have to define the variables and the setters, then Spring injects the correct objects for us to use. Simple and efficient.
-    // You just need to know *what* you want to inject and use.
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
-    private final static String NO_INFO = "";
     
 
     public MavenInfoMacro(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, SubRenderer subRenderer) {
@@ -60,13 +57,15 @@ public class MavenInfoMacro extends BaseMacro {
             keyList = params.keySet().toArray();
         }
 
-        for (Object key : keyList) {
-            if ("groupid".equalsIgnoreCase(key.toString())) {
-                groupId = (String) params.get(key.toString());
-            }
-            if ("artifactid".equalsIgnoreCase(key.toString())) {
-                artifactId = (String) params.get(key.toString());
-            }
+        if(keyList != null) {
+            for (Object key : keyList) {
+                if ("groupid".equalsIgnoreCase(key.toString())) {
+                    groupId = (String) params.get(key.toString());
+                }
+                if ("artifactid".equalsIgnoreCase(key.toString())) {
+                    artifactId = (String) params.get(key.toString());
+                }
+            }            
         }
         if (artifactId != null) {
             result.append(getPluginMetaDataTable(groupId, artifactId));
@@ -211,9 +210,16 @@ public class MavenInfoMacro extends BaseMacro {
             if(site != null && site.getUrl() != null) {
                 return site.getUrl();
             }
-        }        
-        String artifactId = model.getArtifactId();
-        String url = getNexusUrl(model) + artifactId + "-" + getVersion(model) + "-site.jar" + "_/index.html" ;
+        }
+        Configuration configuration = metadataManager.getConfiguration();
+        String url = "";
+        if(configuration != null && configuration.isGenerateLink()) {
+            // no url specified
+            // construct one
+            // url format will be according to format https://github.com/polopoly/nexus-jar-reader-plugin
+            String artifactId = model.getArtifactId();
+            url = getNexusUrl(model) + artifactId + "-" + getVersion(model) + "-site.jar" + "!/index.html" ;            
+        }
         return url;
     }
 
@@ -225,9 +231,6 @@ public class MavenInfoMacro extends BaseMacro {
     private String getNexusUrl(Model model) {
         DistributionManagement distribution = model.getDistributionManagement();
        
-        // no url specified
-        // construct one
-        // url format will be according to format https://github.com/polopoly/nexus-jar-reader-plugin
         DeploymentRepository repository = distribution.getRepository();
         
         String groupId = getGroupId(model).replace(".", "/");
