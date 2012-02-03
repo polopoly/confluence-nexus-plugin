@@ -12,11 +12,11 @@ import org.apache.maven.model.Model;
  */
 public class ExtendedModel extends Model{
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6495594790600528473L;
     private List<Artifact> artifacts = new ArrayList<Artifact>();
-    
-    
-    
-    
 
     public ExtendedModel(Model model, List<Artifact> artifacts) {
         setParent(model.getParent());

@@ -95,6 +95,7 @@
     <confluence.data.version>3.1</confluence.data.version>
     <amps.version>3.7.2</amps.version>
     <refapp.version>2.3.10</refapp.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <repositories>
     <repository>

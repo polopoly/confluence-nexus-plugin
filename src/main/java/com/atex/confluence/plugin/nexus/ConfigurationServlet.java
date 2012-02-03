@@ -27,14 +27,18 @@ import static com.atex.confluence.plugin.nexus.Configuration.*;
 public class ConfigurationServlet extends HttpServlet {
 
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2466275340648634062L;
     private static final String CONTENT_TYPE = "text/html;charset=utf-8";
     private static final String VIEW = "configure.vm";
     
-    private final UserManager userManager;
-    private final LoginUriProvider loginUriProvider;
-    private final TemplateRenderer renderer;
-    private final PluginSettingsFactory pluginSettingsFactory;
-    private final TransactionTemplate transactionTemplate;
+    private transient final UserManager userManager;
+    private transient final LoginUriProvider loginUriProvider;
+    private transient final TemplateRenderer renderer;
+    private transient final PluginSettingsFactory pluginSettingsFactory;
+    private transient final TransactionTemplate transactionTemplate;
 
     public ConfigurationServlet(TemplateRenderer renderer, PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, UserManager userManager, LoginUriProvider loginUriProvider) {
         this.renderer = renderer;
@@ -63,10 +67,12 @@ public class ConfigurationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final String urlString = (String) req.getParameter("url");
-        final String username = (String) req.getParameter("username");
-        final String password = (String) req.getParameter("password");
-        final String groupId = (String) req.getParameter("groupId");
+        final String urlString = req.getParameter("url");
+        final String username = req.getParameter("username");
+        final String password = req.getParameter("password");
+        final String groupId = req.getParameter("groupId");
+        final Boolean generateLink = Boolean.valueOf(req.getParameter("generateLink"));
+        
         Map<String, Object> models = new HashMap<String, Object>();
         if (!isValid(urlString)) {
             models.put("urlString", "error");
@@ -87,6 +93,7 @@ public class ConfigurationServlet extends HttpServlet {
             configuration.setUsername(username);
             configuration.setPassword(password);
             configuration.setGroupId(groupId);
+            configuration.setGenerateLink(generateLink.booleanValue());
             // this is last one to set, which might throw exception
             configuration.setURL(urlString);
         } catch (MalformedURLException e) {
@@ -110,6 +117,8 @@ public class ConfigurationServlet extends HttpServlet {
                     pluginSettings.put(USERNAME, username);
                     pluginSettings.put(PASSWORD, password);
                     pluginSettings.put(GROUPID, groupId);
+                    // not support Boolean object, need use toString()
+                    pluginSettings.put(GENERATE_LINK, generateLink.toString());
                     return null;
                 }
             });
