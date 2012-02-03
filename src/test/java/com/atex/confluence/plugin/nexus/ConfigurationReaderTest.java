@@ -15,7 +15,7 @@ public class ConfigurationReaderTest {
     
     @Test
     public void testRead() throws IOException {
-        Configuration target = new Configuration("http://thisisnexus.com/nexus", "thisisusername", "thisispassword", "com.example.plugins");
+        Configuration target = new Configuration("http://thisisnexus.com/nexus", "thisisusername", "thisispassword", "com.example.plugins", true);
         AuthScope scope = target.getAuthScope();
         assertEquals("thisisnexus.com", scope.getHost());
         assertEquals(80, scope.getPort());

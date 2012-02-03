@@ -16,6 +16,7 @@ public class Configuration {
     private String password;
     private String groupId;
     private String urlString;
+    private boolean generateLink = false;
     private URL url;
     
     public static final String NAME_SPACE = Configuration.class.getName() + ".";
@@ -23,17 +24,19 @@ public class Configuration {
     public static final String PASSWORD = NAME_SPACE + "password";
     public static final String URL = NAME_SPACE + "urlString";
     public static final String GROUPID = NAME_SPACE + "groupId";
+    public static final String GENERATE_LINK = NAME_SPACE + "generateLink";
     
     public Configuration() {
         
     }
     
-    public Configuration(String urlString, String username, String password, String groupId) throws MalformedURLException {
+    public Configuration(String urlString, String username, String password, String groupId, boolean generateLink) throws MalformedURLException {
         this.urlString = urlString;
         this.username = username;
         this.password = password;
         this.groupId = groupId;
         this.url = toURL(urlString);
+        this.generateLink = generateLink;
     }
     
     public Credentials getCredentials() {
@@ -85,6 +88,13 @@ public class Configuration {
         this.urlString = urlString;
     }
     
+    public boolean isGenerateLink() {
+        return generateLink;
+    }
+    public void setGenerateLink(boolean generateLink) {
+        this.generateLink = generateLink;
+    }
+
     public String getSearchURI() {
         return getURL() + "/service/local/lucene/search";
     }

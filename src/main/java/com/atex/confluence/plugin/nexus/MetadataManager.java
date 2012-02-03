@@ -1,20 +1,16 @@
 package com.atex.confluence.plugin.nexus;
 
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -228,5 +224,9 @@ public class MetadataManager {
     
     public static void setConfiguration(Configuration configuration) {
         MetadataManager.configuration = configuration;
+    }
+    
+    public Configuration getConfiguration() {
+        return MetadataManager.configuration;
     }
 }

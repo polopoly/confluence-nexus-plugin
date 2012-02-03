@@ -1,6 +1,7 @@
 package com.atex.confluence.plugin.nexus;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author pau
@@ -155,5 +156,10 @@ public class Artifact implements Serializable {
             }
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(new Object[] {getGroupId(), getArtifactId(), getVersion()});
     }
 }
