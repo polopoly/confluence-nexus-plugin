@@ -179,6 +179,9 @@ public class MavenInfoMacro extends BaseMacro {
                 connection = connection.substring(index + 1);
                 index = connection.indexOf(":");
                 connection = connection.substring(index + 1);
+                if(!connection.startsWith("http")) {
+                    return connection;
+                }
             }
         }
         return parseUrlLabel("Read Only", connection);
