@@ -185,6 +185,10 @@ public class MetadataManager {
                 LOGGER.warn(e.getMessage(), e);
             } catch (XmlPullParserException e) {
                 LOGGER.warn(e.getMessage(), e);
+            } catch (AddressNotFoundException e) {
+                throw new AddressNotFoundException(e);
+            } catch (UnAuthorizeException e) {
+                throw new UnAuthorizeException(e);
             } catch (IOException e) {
                 LOGGER.warn(e.getMessage(), e);
                 throw e;
