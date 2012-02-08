@@ -1,5 +1,23 @@
 package com.atex.confluence.plugin.nexus;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.maven.model.CiManagement;
+import org.apache.maven.model.DeploymentRepository;
+import org.apache.maven.model.Developer;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.IssueManagement;
+import org.apache.maven.model.License;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Organization;
+import org.apache.maven.model.Parent;
+import org.apache.maven.model.Scm;
+import org.apache.maven.model.Site;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.extras.common.org.springframework.util.StringUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
@@ -8,18 +26,14 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import org.apache.maven.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MavenInfoMacro extends BaseMacro {
 
+    private static final String RELASE_NOTE_KEY = "releaseNote";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
+
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
-    private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
     
 
     public MavenInfoMacro(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, SubRenderer subRenderer) {
@@ -57,6 +71,7 @@ public class MavenInfoMacro extends BaseMacro {
         Object keyList[] = null;
         String groupId = null;
         String artifactId = null;
+        String releaseNote = null;
         if (!params.isEmpty()) {
             keyList = params.keySet().toArray();
         }
@@ -69,10 +84,13 @@ public class MavenInfoMacro extends BaseMacro {
                 if ("artifactid".equalsIgnoreCase(key.toString())) {
                     artifactId = (String) params.get(key.toString());
                 }
-            }            
+                if(RELASE_NOTE_KEY.equalsIgnoreCase(key.toString())) {
+                    releaseNote = params.get(key).toString();
+                }
+            }
         }
         if (artifactId != null) {
-            result.append(getPluginMetaDataTable(groupId, artifactId));
+            result.append(getPluginMetaDataTable(groupId, artifactId, releaseNote));
         } else {
             result.append(getPluginListTable(groupId));
         }
@@ -117,7 +135,7 @@ public class MavenInfoMacro extends BaseMacro {
         return result.toString();
     }
 
-    private String getPluginMetaDataTable(String groupId, String artifactId) {
+    private String getPluginMetaDataTable(String groupId, String artifactId, String releaseNote) {
         ExtendedModel model;
         StringBuilder result = new StringBuilder();
         try {
@@ -155,6 +173,9 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(" || Maven Repositories | ");
                 result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
                 result.append(" | \n ");
+                if(releaseNote != null && !releaseNote.trim().isEmpty()) {
+                    result.append("|| Release Note |").append(parseUrlLabel("Release Note", releaseNote)).append("| \n");
+                }
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");
                 result.append(parseString(model.getDescription()).replaceAll("\n", " "));
