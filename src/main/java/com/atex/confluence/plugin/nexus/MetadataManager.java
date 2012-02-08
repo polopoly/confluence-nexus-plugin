@@ -201,10 +201,13 @@ public class MetadataManager {
         if(status != HttpStatus.SC_OK) {
             String message = "Failed to request url " + url + ", returned status: " + status;
             if(status == HttpStatus.SC_UNAUTHORIZED) {
-                throw new UnAuthorizeException();
+                LOGGER.warn(message);
+                throw new UnAuthorizeException(message);
             } else if (status == HttpStatus.SC_NOT_FOUND) {
-                throw new AddressNotFoundException();
+                LOGGER.warn(message);
+                throw new AddressNotFoundException(message);
             }
+            LOGGER.warn(message);
             throw new IOException(message);
         }
         return get;
