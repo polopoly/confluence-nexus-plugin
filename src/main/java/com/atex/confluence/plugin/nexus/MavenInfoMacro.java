@@ -12,11 +12,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.apache.maven.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MavenInfoMacro extends BaseMacro {
 
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
     
 
     public MavenInfoMacro(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, SubRenderer subRenderer) {
@@ -237,24 +240,38 @@ public class MavenInfoMacro extends BaseMacro {
             // construct one
             // url format will be according to format https://github.com/polopoly/nexus-jar-reader-plugin
             String artifactId = model.getArtifactId();
-            url = getNexusUrl(model) + artifactId + "-" + getVersion(model) + "-site.jar" + "!/index.html" ;            
+            String baseUrl = getNexusUrl(model);
+            if(baseUrl == null || baseUrl.trim().isEmpty()) {
+                return "";
+            }
+            url = baseUrl + artifactId + "-" + getVersion(model) + "-site.jar" + "!/index.html" ;            
         }
         return url;
     }
 
     private String getMavenRepo(Model model) {
-        String url = getNexusUrl(model) ;
-        return url;
+        return getNexusUrl(model) ;
     }
     
     private String getNexusUrl(Model model) {
         DistributionManagement distribution = model.getDistributionManagement();
-       
+        if(distribution == null) {
+            LOGGER.debug("Distribution Management for " + model.toString() + " is not define in pom file.");
+            return null;
+        }
         DeploymentRepository repository = distribution.getRepository();
         
+        if(repository == null) {
+            LOGGER.debug("Deployment Repository for " + model.toString() + " is not define in pom file.");
+            return null;
+        }
         String groupId = getGroupId(model).replace(".", "/");
         String artifactId = model.getArtifactId().replace(".", "/");
         String url = repository.getUrl();
+        if(url == null) {
+            LOGGER.debug("Deployment Repository's URL for " + model.toString() + " is not define in pom file.");
+            return null;
+        }
         if(!url.endsWith("/")) {
             url = url + "/";
         }
