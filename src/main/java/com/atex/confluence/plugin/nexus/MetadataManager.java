@@ -152,7 +152,6 @@ public class MetadataManager {
         artifact.setLatestSnapshot(getTextValue(el, "latestSnapshot"));
         artifact.setLatestSnapshotRepositoryId(getTextValue(el, "latestSnapshotRepositoryId"));
         artifact.setLatestRelease(getTextValue(el, "latestRelease"));
-        artifact.setLatestRelease(getTextValue(el, "latestRelease"));
         artifact.setLatestReleaseRepositoryId(getTextValue(el, "latestReleaseRepositoryId"));
         
         return artifact;
