@@ -90,13 +90,9 @@ public class ExtendedModel extends Model{
         });
     }
     
-    
-    private <T> List<T> safe(List<T> list) {
-        if(list == null) {
-            list = new ArrayList<T>();
-        }
-        
-        return list;
+    @Override
+    public String getDescription() {
+        return safe(super.getDescription());
     }
     
     @Override
@@ -111,6 +107,20 @@ public class ExtendedModel extends Model{
     @Override
     public int hashCode() {
         return getId().hashCode();
+    }
+    
+    private String safe(String value) {
+        return value == null?
+                ""
+                : value;
+    }
+    
+    private <T> List<T> safe(List<T> list) {
+        if(list == null) {
+            list = new ArrayList<T>();
+        }
+        
+        return list;
     }
     
 }

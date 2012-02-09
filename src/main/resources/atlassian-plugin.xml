@@ -18,6 +18,7 @@
     <parameters>
         <parameter name="artifactId" type="string"/>
         <parameter name="groupId" type="string"/>
+        <parameter name="releaseNote" type="string"/>
     </parameters>
     </macro>
     <!-- macro name="nplugin-other" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-macro">
