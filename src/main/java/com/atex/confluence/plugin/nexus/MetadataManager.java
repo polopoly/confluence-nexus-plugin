@@ -35,8 +35,6 @@ public class MetadataManager {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataManager.class);
     
-    
-    
     public MetadataManager(Configuration configuration) {
         setConfiguration(configuration);
     }
@@ -176,9 +174,9 @@ public class MetadataManager {
             if(artifact == null) {
                 continue;
             }
-            HttpMethod get = doGetHttpMethod(getUrl(artifact, repositories));
-            MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
             try {
+                HttpMethod get = doGetHttpMethod(getUrl(artifact, repositories));
+                MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
                 Model model = mavenXpp3Reader.read(get.getResponseBodyAsStream());
                 poms.add(new ExtendedModel(model, artifacts));
             } catch (IllegalStateException e) {
@@ -186,7 +184,6 @@ public class MetadataManager {
             } catch (XmlPullParserException e) {
                 LOGGER.warn(e.getMessage(), e);
             } catch (AddressNotFoundException e) {
-                throw new AddressNotFoundException(e);
             } catch (UnAuthorizeException e) {
                 throw new UnAuthorizeException(e);
             } catch (IOException e) {
@@ -205,13 +202,13 @@ public class MetadataManager {
         if(status != HttpStatus.SC_OK) {
             String message = "Failed to request url " + url + ", returned status: " + status;
             if(status == HttpStatus.SC_UNAUTHORIZED) {
-                LOGGER.warn(message);
+                LOGGER.error(message);
                 throw new UnAuthorizeException(message);
             } else if (status == HttpStatus.SC_NOT_FOUND) {
-                LOGGER.warn(message);
+                LOGGER.error(message);
                 throw new AddressNotFoundException(message);
             }
-            LOGGER.warn(message);
+            LOGGER.error(message);
             throw new IOException(message);
         }
         return get;
