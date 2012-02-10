@@ -1,6 +1,9 @@
 package com.atex.confluence.plugin.nexus;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -174,7 +177,13 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
                 result.append(" | \n ");
                 if(releaseNote != null && !releaseNote.trim().isEmpty()) {
-                    result.append("|| Release Note |").append(parseUrlLabel("Release Note", releaseNote)).append("| \n");
+                    try {
+                        // validate URL
+                        new URL(releaseNote);
+                        result.append("|| Release Note |").append(parseUrlLabel("Release Note", releaseNote)).append("| \n");
+                    } catch (MalformedURLException e) {
+                        result.append("|| Release Note |{warning}").append(releaseNote).append(" is not valid URL{warning}").append("| \n");
+                    }
                 }
                 result.append(" h5. Description \n ");
                 result.append(" {excerpt:hidden=true} ");

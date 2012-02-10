@@ -68,8 +68,8 @@ public class ExtendedModel extends Model{
         // only add artifact in the same group
         for(Artifact artifact: artifacts) {
             if(artifact != null) {
-                if(getArtifactId().equals(artifact.getArtifactId()) 
-                        && getGroupId().equals(artifact.getGroupId()) 
+                if(safeEquals(getArtifactId(), artifact.getArtifactId()) 
+                        && safeEquals(getGroupId(), artifact.getGroupId()) 
                         && !this.artifacts.contains(artifact)) {
                     this.artifacts.add(artifact);
                 }
@@ -88,6 +88,14 @@ public class ExtendedModel extends Model{
                 }
             }
         });
+    }
+    
+    private boolean safeEquals(String s1, String s2) {
+        if(s1 != null && s2 != null) {
+            return s1.equals(s2);
+        }
+        
+        return false;
     }
     
     @Override
