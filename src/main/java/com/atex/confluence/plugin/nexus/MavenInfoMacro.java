@@ -2,7 +2,6 @@ package com.atex.confluence.plugin.nexus;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -205,19 +204,23 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getConnection(Scm scm) {
-        String connection = scm.getConnection();
-        if(connection != null && !connection.trim().isEmpty()) {
-            if(StringUtils.countOccurrencesOf(connection, ":") > 2) {
-                int index = connection.indexOf(":");
-                connection = connection.substring(index + 1);
-                index = connection.indexOf(":");
-                connection = connection.substring(index + 1);
-                if(!connection.startsWith("http")) {
-                    return connection;
+        if(scm != null) {
+            String connection = scm.getConnection();
+            if(connection != null && !connection.trim().isEmpty()) {
+                if(StringUtils.countOccurrencesOf(connection, ":") > 2) {
+                    int index = connection.indexOf(":");
+                    connection = connection.substring(index + 1);
+                    index = connection.indexOf(":");
+                    connection = connection.substring(index + 1);
+                    if(!connection.startsWith("http")) {
+                        return connection;
+                    }
                 }
             }
+            return parseUrlLabel("Read Only", connection);            
+        } else {
+            return "";
         }
-        return parseUrlLabel("Read Only", connection);
     }
 
     private String getCIEnv(CiManagement cim) {
