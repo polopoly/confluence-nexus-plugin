@@ -33,6 +33,7 @@ public class MavenInfoMacro extends BaseMacro {
 
     private static final String RELASE_NOTE_KEY = "releaseNote";
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
+    private static final String MAVEN_SITE_TITLE = "Link to Maven Site";
 
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
@@ -171,9 +172,9 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(" || License | ");
                 result.append(getLicenses(licenses));
                 result.append(" | \n || Maven Site | ");
-                result.append(parseUrlLabel("Link to Maven Site", getLinkToSite(model)));
+                result.append(getLinkToSite(model));
                 result.append(" || Maven Repositories | ");
-                result.append(parseUrlLabel("Link to Maven Repo", getMavenRepo(model)));
+                result.append(getMavenRepo(model));
                 result.append(" | \n ");
                 if(releaseNote != null && !releaseNote.trim().isEmpty()) {
                     try {
@@ -263,7 +264,7 @@ public class MavenInfoMacro extends BaseMacro {
         if(distribution != null) {
             Site site = distribution.getSite();
             if(site != null && site.getUrl() != null) {
-                return site.getUrl();
+                return parseUrlLabel(MAVEN_SITE_TITLE, site.getUrl());
             }
         }
         Configuration configuration = metadataManager.getConfiguration();
@@ -279,11 +280,16 @@ public class MavenInfoMacro extends BaseMacro {
             }
             url = baseUrl + artifactId + "-" + getVersion(model) + "-site.jar" + "!/index.html" ;            
         }
-        return url;
+        return parseUrlLabel(MAVEN_SITE_TITLE, url);
     }
 
     private String getMavenRepo(Model model) {
-        return getNexusUrl(model) ;
+        String url = getNexusUrl(model) ;
+        if(url != null && !url.trim().isEmpty()) {
+            return parseUrlLabel("Link to Maven Repo", url);
+        } else {
+            return "";
+        }
     }
     
     private String getNexusUrl(Model model) {
