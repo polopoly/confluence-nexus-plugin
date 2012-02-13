@@ -100,7 +100,7 @@ public class ExtendedModel extends Model{
     
     @Override
     public String getDescription() {
-        return safe(super.getDescription());
+        return safe(super.getDescription(), "N/A");
     }
     
     @Override
@@ -117,9 +117,9 @@ public class ExtendedModel extends Model{
         return getId().hashCode();
     }
     
-    private String safe(String value) {
+    private String safe(String value, String fallback) {
         return value == null?
-                ""
+                fallback
                 : value;
     }
     
