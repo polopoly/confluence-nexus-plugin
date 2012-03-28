@@ -33,7 +33,7 @@ public class MavenInfoMacro extends BaseMacro {
 
     private static final String RELASE_NOTE_KEY = "releaseNote";
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
-    private static final String MAVEN_SITE_TITLE = "Link to Maven Site";
+    private static final String MAVEN_SITE_TITLE = "Link to Documentation";
 
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
@@ -171,7 +171,7 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getCIEnv(cim));
                 result.append(" || License | ");
                 result.append(getLicenses(licenses));
-                result.append(" | \n || Maven Site | ");
+                result.append(" | \n || Documentation | ");
                 result.append(getLinkToSite(model));
                 result.append(" || Maven Repositories | ");
                 result.append(getMavenRepo(model));
