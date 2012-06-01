@@ -1,0 +1,2 @@
+
+   $webResourceManager.requireResource("com.atex.confluence.plugin.confluence-nexus-plugin:resources")

@@ -29,6 +29,8 @@
     </servlet>
     <web-resource name="Admin Web Resources" key="resources">
       <dependency>com.atlassian.auiplugin:ajs</dependency>
+      <resource type="download" name="tabulator.js" location="/js/tabulator.js">
+      </resource>
       <resource type="download" name="config.css" location="config.css"/>
     </web-resource>
 </atlassian-plugin>
