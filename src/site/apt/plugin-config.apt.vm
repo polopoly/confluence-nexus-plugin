@@ -1,0 +1,24 @@
+Installation
+
+  Grab the {{{https://github.com/polopoly/confluence-nexus-plugin}source code}}, type "mvn install" within the source code folder.
+  After successful build, a jar file will be generated at target folder.
+
+  Administrator access is required to install this plugin.
+  After login as administrators, click Browse -> Confluence Admin -> Plugins.
+  Navigate to install tab, click upload, select the jar file created.
+  
+Configuration
+
+  After the plugin is installed, click Manage Existing tab.
+  Expand the plugin and there is a Config link within.
+  
+[images/configpagelink.png]
+  
+  Click the Config link
+
+[images/howtoconfig-1.png]
+
+  Click Save button
+
+  You can install {{{https://github.com/polopoly/nexus-jar-reader-plugin}Nexus Jar Reader}} for deploy maven site to Nexus.
+

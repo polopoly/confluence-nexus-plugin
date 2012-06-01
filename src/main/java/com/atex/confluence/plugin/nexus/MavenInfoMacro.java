@@ -3,10 +3,20 @@ package com.atex.confluence.plugin.nexus;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.hibernate.collection.SortedSet;
 
 import org.apache.maven.model.CiManagement;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.DistributionManagement;
@@ -20,6 +30,8 @@ import org.apache.maven.model.Site;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
+import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.extras.common.org.springframework.util.StringUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
@@ -28,12 +40,16 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.opensymphony.webwork.ServletActionContext;
 
 public class MavenInfoMacro extends BaseMacro {
 
+    private static final String PROPERTIES_POLOPOLY_VERSION = "polopoly.version";
+    private static final String ARTIFACTID_BASELINE = "baseline";
     private static final String RELASE_NOTE_KEY = "releaseNote";
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
     private static final String MAVEN_SITE_TITLE = "Link to Documentation";
+    private static final String RESOURCE_VM = "nexusinfotabulator.vm";
 
     private final SubRenderer subRenderer;
     private final MetadataManager metadataManager;
@@ -70,15 +86,17 @@ public class MavenInfoMacro extends BaseMacro {
     @SuppressWarnings("rawtypes")
     @Override
     public String execute(Map params, String body, RenderContext renderContext) throws MacroException {
-        StringBuilder result = new StringBuilder();
+        Map context = MacroUtils.defaultVelocityContext();
+        StringBuilder result = new StringBuilder(
+                VelocityUtils.getRenderedTemplate(RESOURCE_VM, context));
         Object keyList[] = null;
         String groupId = null;
         String artifactId = null;
         String releaseNote = null;
+        String releaseVer = null;
         if (!params.isEmpty()) {
             keyList = params.keySet().toArray();
         }
-
         if(keyList != null) {
             for (Object key : keyList) {
                 if ("groupid".equalsIgnoreCase(key.toString())) {
@@ -92,8 +110,14 @@ public class MavenInfoMacro extends BaseMacro {
                 }
             }
         }
+        
         if (artifactId != null) {
-            result.append(getPluginMetaDataTable(groupId, artifactId, releaseNote));
+            HttpServletRequest req = ServletActionContext.getRequest();
+            if (req != null) {
+                releaseVer = req.getParameter("releaseVer");
+            }
+            result.append(" \n ");
+            result.append(getPluginMetaDataTable(groupId, artifactId, releaseNote, releaseVer));
         } else {
             result.append(getPluginListTable(groupId));
         }
@@ -138,27 +162,39 @@ public class MavenInfoMacro extends BaseMacro {
         return result.toString();
     }
 
-    private String getPluginMetaDataTable(String groupId, String artifactId, String releaseNote) {
+    private String getPluginMetaDataTable(String groupId, String artifactId, String releaseNote, String version) {
         ExtendedModel model;
         StringBuilder result = new StringBuilder();
         try {
-            model = metadataManager.getMetadata(groupId, artifactId);
+            model = metadataManager.getMetadata(groupId, artifactId, version);
             if (model != null) {
                 IssueManagement issueManagement = model.getIssueManagement();
                 Scm scm = model.getScm();
                 Organization org = model.getOrganization();
                 List<License> licenses = model.getLicenses();
                 CiManagement cim = model.getCiManagement();
-                result.append(" h3. Metadata for ");
+                result.append("{html}");
+                result.append("<div id=\"ndiv-");
+                result.append(model.getArtifactId());
+                result.append("\">");
+                result.append("\n");
+                result.append("{html} \n ");
+                result.append("h3. Metadata for ");
                 result.append(parseString(model.getName()));
+                result.append("\n Release(s) ");
+                result.append(getVersionsDropDown(model, version));
                 result.append("\n || Group Id | ");
-                result.append(getGroupId(model));
+                result.append(getGroupId(model)); 
                 result.append(" || Artifact Id | ");
                 result.append(model.getArtifactId());
-                result.append("| \n || Release(s) | ");
-                result.append(getVersions(model));
-                result.append(" || Developers | ");
+                result.append("| \n || Release | ");
+                result.append(model.getVersion());
+                result.append(" ||  Developer(s) | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
+                result.append("| \n || Supported Polopoly Release | ");
+                result.append(getSupportedPolopolyVersion(model));
+                result.append(" || Supported Baseline Release | ");
+                result.append(getBaselineVersion(model));
                 result.append("| \n || Source Code | ");
                 result.append(getSourceCode(scm));
                 result.append(" || Source Code(Read Only) | ");
@@ -190,7 +226,9 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(parseString(model.getDescription()).replaceAll("\n", " "));
                 result.append(" {excerpt} \n ");
                 result.append(parseString(model.getDescription()));
-                
+                result.append("{html}");
+                result.append("</div>");
+                result.append("{html}");
             } else {
                 result.append("{warning}Metadata model not available{warning}");
             }
@@ -243,6 +281,40 @@ public class MavenInfoMacro extends BaseMacro {
         
         return builder.toString();
     }
+
+    private String getVersionsDropDown(ExtendedModel model, String selected) {
+        StringBuilder builder = new StringBuilder();
+        Set<String> versions = new TreeSet<String>(Collections.reverseOrder());
+        for(Artifact a: model.getArtifacts()) {
+            versions.add(a.getVersion());
+        }
+        builder.append(" {html}");
+        builder.append("\n <select id=\"");
+        builder.append(model.getArtifactId());
+        builder.append("\"");
+        builder.append(" class=\"selectRelease\"> \n");
+        int count = 0;
+        for(String version: versions) {
+            builder.append("<option value=\"");
+            builder.append(version);
+            builder.append("\"");
+            if (count==0 && selected==null) {
+                builder.append(" selected=\"selected\"");
+            } else {
+                if (version.equals(selected)) {
+                    builder.append(" selected=\"selected\"");
+                }
+            }
+            count++;
+            builder.append(">");
+            builder.append(version);
+            builder.append("</option> \n ");
+        }
+        builder.append("</select> \n");
+        builder.append("{html} \n ");
+        return builder.toString();
+    }
+
     private String getSourceCode(Scm scm) {
         StringBuilder result = new StringBuilder();
         if (scm !=null) {
@@ -435,4 +507,26 @@ public class MavenInfoMacro extends BaseMacro {
         String name = parseString(field);
         return name.replace(invalidPattern, "");
     }
+
+    private String getBaselineVersion(ExtendedModel model) {
+        StringBuilder builder = new StringBuilder();
+        for (Dependency dep :model.getDependencies()) {
+            if (ARTIFACTID_BASELINE.equalsIgnoreCase(dep.getArtifactId())) {
+                builder.append(dep.getVersion().trim());
+                break;
+            }
+        }
+        return builder.toString();
+    }
+    
+    private String getSupportedPolopolyVersion(ExtendedModel model) {
+        StringBuilder builder = new StringBuilder();
+        String result = (String) model.getProperties().get(PROPERTIES_POLOPOLY_VERSION);
+        if (result!=null) {
+            builder.append(result.trim());
+        }
+        return builder.toString();
+    }
+
+
 }

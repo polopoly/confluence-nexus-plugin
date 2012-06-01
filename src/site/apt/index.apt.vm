@@ -1,0 +1,22 @@
+Description
+
+  ${project.description}
+  
+  Confluence Nexus Plugin has the following features:-
+  
+  * <<List artifacts>>
+  
+    * It lets the user to automatically list all artifacts under a groupId 
+    from a maven repository.
+    
+  * <<Baseball card of a specific release of an artifact>>
+  
+    * It allows user view information about a specific release of an artifact.
+
+Version
+
+  ${project.version}
+
+Author
+
+  {{{${project.organization.url}} ${project.organization.name}}}

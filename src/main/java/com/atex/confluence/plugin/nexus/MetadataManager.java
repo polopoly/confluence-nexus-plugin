@@ -49,31 +49,33 @@ public class MetadataManager {
         Response result = getResponse(groupId);
         return getPoms(result.getLatestReleases(), result.getRepositories());
     }
-    
+
     /**
      * Search maven model based on artifactId using default groupId
      * @param artifactId of the maven to be search
      * @return model of the maven, else null when not found
      * @throws IOException when search failed
      */
-    public Model getMetadata(String artifactId) throws IOException {
-        return getMetadata(null, artifactId);
-    }
+//    public Model getMetadata(String artifactId) throws IOException {
+//        return getMetadata(null, artifactId);
+//    }
     
     /**
      * Search maven model based on groupId and artifactId
      * @param groupId of the artifacts to be search
      * @param artifactId of the maven to be search
+     * @param version of the version to be search, null value will get the latest version
      * @return model of the maven, else null when not found
      * @throws IOException when search failed
      */
-    public ExtendedModel getMetadata(String groupId, String artifactId) throws IOException {
+    public ExtendedModel getMetadata(String groupId, String artifactId, String version) throws IOException {
         Response result = getResponse(groupId);
         Artifact artifact = result.getByArtifactId(artifactId);
         if(artifact == null) {
             return null;
         }
-        List<ExtendedModel> models = getPoms(Arrays.asList(artifact), result.getRepositories());
+        List<ExtendedModel> models = new ArrayList<ExtendedModel>();
+        models = getPoms(Arrays.asList(artifact), result.getRepositories(), version);
         if(models != null && models.size() == 1) {
             ExtendedModel model = models.get(0);
             model.setArtifacts(result.getListByArtifactId(artifactId));
@@ -82,7 +84,8 @@ public class MetadataManager {
             return null;
         }
     }
-    
+
+
     public List<Repository> getRepositories() throws IOException, ParserConfigurationException, SAXException {
         List<Repository> repositories = new ArrayList<Repository>();
         HttpMethod get = doGetHttpMethod(configuration.getSearchRepositoriesURI());
@@ -174,7 +177,7 @@ public class MetadataManager {
                 continue;
             }
             try {
-                HttpMethod get = doGetHttpMethod(getUrl(artifact, repositories));
+                HttpMethod get = doGetHttpMethod(getUrl(artifact, repositories, null));
                 MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
                 Model model = mavenXpp3Reader.read(get.getResponseBodyAsStream());
                 poms.add(new ExtendedModel(model, artifacts));
@@ -192,6 +195,38 @@ public class MetadataManager {
         }
         return poms;
     }
+    
+    private List<ExtendedModel> getPoms(List<Artifact> artifacts, List<Repository> repositories, String version) throws IOException {
+        List<ExtendedModel> poms = new ArrayList<ExtendedModel>();
+        for(Artifact artifact: artifacts) {
+            if(artifact == null) {
+                continue;
+            } else {
+                if (version==null || version.isEmpty()) {
+                    version = artifact.getLatestRelease();
+                }
+            }
+            try {
+                HttpMethod get = doGetHttpMethod(getUrl(artifact, repositories, version));
+                MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
+                Model model = mavenXpp3Reader.read(get.getResponseBodyAsStream());
+                poms.add(new ExtendedModel(model, artifacts));
+                LOGGER.warn("artifacts id" + model.getArtifactId());
+            } catch (IllegalStateException e) {
+                LOGGER.warn(e.getMessage(), e);
+            } catch (XmlPullParserException e) {
+                LOGGER.warn(e.getMessage(), e);
+            } catch (AddressNotFoundException e) {
+            } catch (UnAuthorizeException e) {
+                throw new UnAuthorizeException(e);
+            } catch (IOException e) {
+                LOGGER.warn(e.getMessage(), e);
+                throw e;
+            }
+        }
+        return poms;
+    }
+
     
     private HttpMethod doGetHttpMethod(String url) throws IOException {
         HttpMethod get = new GetMethod(url);
@@ -212,7 +247,7 @@ public class MetadataManager {
         }
         return get;
     }
-    
+
     private String getUrl(Artifact artifact, List<Repository> repositories) {
         String groupIdPath = artifact.getGroupId().replace(".", "/");
         String url = "/" + groupIdPath + "/" + artifact.getArtifactId() + "/" + artifact.getVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getVersion() + ".pom";
@@ -224,7 +259,23 @@ public class MetadataManager {
         }
         return url;
     }
-    
+
+    private String getUrl(Artifact artifact, List<Repository> repositories, String version) {
+        String groupIdPath = artifact.getGroupId().replace(".", "/");
+        if (version==null || version.isEmpty()) {
+            version = artifact.getVersion();
+        }
+        String url = "/" + groupIdPath + "/" + artifact.getArtifactId() + "/" + version + "/" + artifact.getArtifactId() + "-" + version + ".pom";
+        for(Repository repository: repositories) {
+            if(repository.getRepositoryId().equals(artifact.getLatestReleaseRepositoryId())) {
+                url = repository.getRepositoryURL() + url;
+                break;
+            }
+        }
+        return url;
+    }
+
+
     public static void setConfiguration(Configuration configuration) {
         MetadataManager.configuration = configuration;
     }

@@ -1,0 +1,29 @@
+Usage
+
+  Please make sure this plugin is properly configured.
+  Refer {{{/plugin-config.html}Confluence Nexus Plugin Configuration}}
+
+* Create Maven Metadata List
+
+  Insert a macro, select Maven Metadata Tabulator
+
+[images/usage-previewlist01.png]
+
+   List all maven metadata based on default groupId (com.atex.plugins)
+
+[images/usage-previewlist02.png]
+
+  Use different groupId than the default one. (org.springframework)
+
+  Click Save button to insert
+
+* Create Maven Metadata Table (specific artifact)
+
+[images/usage-preview01.png]
+
+    Display a particular maven metadata, groupId=com.atex.plugins and artifactId=facebook-plugin
+
+[images/usage-previewrelnote01.png]
+
+    Add a release note link to the artifact, the link will shows at position highlighted in red box.
+
