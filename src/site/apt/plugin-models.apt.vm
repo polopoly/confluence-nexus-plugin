@@ -1,0 +1,4 @@
+Models
+
+  This describes the "public api" of the models of this plugin, these properties can be expected to remain after an upgrade to a new version of this plugin.
+

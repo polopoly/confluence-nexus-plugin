@@ -1,0 +1,24 @@
+Usage
+
+  Please make sure this plugin is properly configured.
+  Refer {{{/plugin-config.html}Confluence Nexus Plugin Configuration}}
+
+* Navigate between release for a specific artifact
+
+[images/usage-normal01.png]
+
+  When the page is loaded, the latest release of the plugin will be populated.
+
+[images/usage-normal02.png]
+
+  Select other release from the dropdown option. 
+
+[images/usage-normal03b.png]
+
+  The information of the plugin will be grey out and disabled. 
+
+[images/usage-normal04.png]
+
+  The information of the plugin was refreshed with detail of other release.
+
+
