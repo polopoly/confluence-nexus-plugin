@@ -3,17 +3,14 @@ package com.atex.confluence.plugin.nexus;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.hibernate.collection.SortedSet;
 
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
@@ -30,6 +27,13 @@ import org.apache.maven.model.Site;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atex.confluence.plugin.nexus.config.Configuration;
+import com.atex.confluence.plugin.nexus.config.ConfigurationReader;
+import com.atex.confluence.plugin.nexus.connect.AddressNotFoundException;
+import com.atex.confluence.plugin.nexus.connect.UnAuthorizeException;
+import com.atex.confluence.plugin.nexus.data.Artifact;
+import com.atex.confluence.plugin.nexus.data.ExtendedModel;
+import com.atex.confluence.plugin.nexus.data.MetadataManager;
 import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.extras.common.org.springframework.util.StringUtils;
@@ -42,9 +46,16 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.opensymphony.webwork.ServletActionContext;
 
+/**
+ * @author wkuo
+ *
+ */
+
 public class MavenInfoMacro extends BaseMacro {
 
+    private static final String PROPERTIES_BASELINE_VERSION = "baseline.version";
     private static final String PROPERTIES_POLOPOLY_VERSION = "polopoly.version";
+    private static final String ARTIFACTID_POLOPOLY = "polopoly";
     private static final String ARTIFACTID_BASELINE = "baseline";
     private static final String RELASE_NOTE_KEY = "releaseNote";
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenInfoMacro.class);
@@ -110,7 +121,7 @@ public class MavenInfoMacro extends BaseMacro {
                 }
             }
         }
-        
+
         if (artifactId != null) {
             HttpServletRequest req = ServletActionContext.getRequest();
             if (req != null) {
@@ -182,19 +193,19 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append("h3. Metadata for ");
                 result.append(parseString(model.getName()));
                 result.append("\n Release(s) ");
-                result.append(getVersionsDropDown(model, version));
+                result.append(getReleasesDropDown(model, version));
                 result.append("\n || Group Id | ");
                 result.append(getGroupId(model)); 
                 result.append(" || Artifact Id | ");
                 result.append(model.getArtifactId());
                 result.append("| \n || Release | ");
-                result.append(model.getVersion());
+                result.append(getVersion(model));
                 result.append(" ||  Developer(s) | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
                 result.append("| \n || Supported Polopoly Release | ");
-                result.append(getSupportedPolopolyVersion(model));
+                result.append(getSupportedPolopolyRelease(model));
                 result.append(" || Supported Baseline Release | ");
-                result.append(getBaselineVersion(model));
+                result.append(getBaselineRelease(model));
                 result.append("| \n || Source Code | ");
                 result.append(getSourceCode(scm));
                 result.append(" || Source Code(Read Only) | ");
@@ -256,7 +267,7 @@ public class MavenInfoMacro extends BaseMacro {
                     }
                 }
             }
-            return parseUrlLabel("Read Only", connection);            
+            return parseUrlLabel("Read Only", connection);
         } else {
             return "";
         }
@@ -282,7 +293,13 @@ public class MavenInfoMacro extends BaseMacro {
         return builder.toString();
     }
 
-    private String getVersionsDropDown(ExtendedModel model, String selected) {
+    /**
+     * This method gather all releases from the artifact and generate the code of a drop down field at front end.
+     * @param model
+     * @param selected 
+     * @return
+     */
+    private String getReleasesDropDown(ExtendedModel model, String selected) {
         StringBuilder builder = new StringBuilder();
         Set<String> versions = new TreeSet<String>(Collections.reverseOrder());
         for(Artifact a: model.getArtifacts()) {
@@ -330,7 +347,7 @@ public class MavenInfoMacro extends BaseMacro {
         }
         return result.toString();
     }
-    
+
     private String getLinkToSite(Model model) {
         DistributionManagement distribution = model.getDistributionManagement();
         if(distribution != null) {
@@ -363,7 +380,7 @@ public class MavenInfoMacro extends BaseMacro {
             return "";
         }
     }
-    
+
     private String getNexusUrl(Model model) {
         DistributionManagement distribution = model.getDistributionManagement();
         if(distribution == null) {
@@ -469,7 +486,7 @@ public class MavenInfoMacro extends BaseMacro {
     private String parseUrlLabel(String rawLabel, String rawUrl) {
         StringBuilder result = new StringBuilder();
         String label = parseString(rawLabel);
-        String url = parseString(rawUrl);               
+        String url = parseString(rawUrl);
         if (label.length() > 0 && url.length() > 0) {
             result.append("[");
             result.append(label);
@@ -508,25 +525,63 @@ public class MavenInfoMacro extends BaseMacro {
         return name.replace(invalidPattern, "");
     }
 
-    private String getBaselineVersion(ExtendedModel model) {
-        StringBuilder builder = new StringBuilder();
-        for (Dependency dep :model.getDependencies()) {
-            if (ARTIFACTID_BASELINE.equalsIgnoreCase(dep.getArtifactId())) {
-                builder.append(dep.getVersion().trim());
-                break;
-            }
-        }
-        return builder.toString();
-    }
-    
-    private String getSupportedPolopolyVersion(ExtendedModel model) {
-        StringBuilder builder = new StringBuilder();
-        String result = (String) model.getProperties().get(PROPERTIES_POLOPOLY_VERSION);
-        if (result!=null) {
-            builder.append(result.trim());
-        }
-        return builder.toString();
+    /**
+     * This method return the supported baseline release as string
+     * @param model
+     * @return the release of baseline
+     */
+    private String getBaselineRelease(ExtendedModel model) {
+        return getSupportedReleases(model, PROPERTIES_BASELINE_VERSION, ARTIFACTID_BASELINE);
     }
 
+    /**
+     * This method return the supported polopoly release as string
+     * @param model
+     * @return the release of polopoly
+     */
+    private String getSupportedPolopolyRelease(ExtendedModel model) {
+        return getSupportedReleases(model, PROPERTIES_POLOPOLY_VERSION, ARTIFACTID_POLOPOLY);
+    }
+
+    /**
+     * This method will read the supported releases from either properties key or dependency version 
+     * from the model (pom.xml). Properties value will be use if existed and only will read from dependency
+     * if the properties doesn't exist. 
+     * @param model
+     * @param propKey
+     * @param artifactId
+     * @return The supported releases in string. Empty string if not found.
+     */
+    private String getSupportedReleases(ExtendedModel model, String propKey, String artifactId) {
+        String result = readSpecificProperty(model.getProperties(), propKey);
+        if (!result.isEmpty()) {
+            return result;
+        }
+        return readSpecificDependencyVersion(model.getDependencies(), artifactId);
+    }
+
+    private String readSpecificDependencyVersion(List<Dependency> dependencies, String artifactId) {
+        String result = "";
+        if (artifactId!=null && !artifactId.isEmpty()) {
+            for (Dependency dependency: dependencies) {
+                if (artifactId.trim().equalsIgnoreCase(dependency.getArtifactId().trim())) {
+                    return dependency.getVersion().trim();
+                }
+            }
+        }
+        return result;
+    }
+
+    private String readSpecificProperty(Properties properties, String key) {
+        String result = "";
+        if (key!=null && !key.isEmpty()) {
+            result = (String) properties.get(key);
+            if (result==null){
+                return "";
+            }
+            return result.trim();
+        }
+        return result;
+    }
 
 }

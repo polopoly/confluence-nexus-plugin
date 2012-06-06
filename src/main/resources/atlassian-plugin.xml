@@ -24,7 +24,7 @@
     <!-- macro name="nplugin-other" class="com.atex.confluence.plugin.nexus.MavenInfoMacro" key="atex-nplugin-macro">
     <description>Other macro that will populate maven metadata to confluence </description> 
     </macro-->
-    <servlet key="configuration-servlet" class="com.atex.confluence.plugin.nexus.ConfigurationServlet">
+    <servlet key="configuration-servlet" class="com.atex.confluence.plugin.nexus.config.ConfigurationServlet">
       <url-pattern>/nplugin/configure</url-pattern>
     </servlet>
     <web-resource name="Admin Web Resources" key="resources">
