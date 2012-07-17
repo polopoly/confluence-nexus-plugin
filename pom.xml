@@ -244,4 +244,9 @@
       </reporting>
     </profile>
   </profiles>
+  <scm>
+     <connection>scm:git:git://github.com/polopoly/confluence-nexus-plugin.git</connection>
+     <developerConnection>scm:git:git@github.com:polopoly/confluence-nexus-plugin.git</developerConnection>
+  </scm>
+ 
 </project>
