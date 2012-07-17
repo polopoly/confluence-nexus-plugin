@@ -106,6 +106,12 @@
   </properties>
   <repositories>
     <repository>
+      <!-- For javax.activation-1.0.2 -->
+      <id>polopoly-3rdparty</id>
+      <name>Polopoly third-party</name>
+      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-3rdparty</url>
+    </repository>
+     <repository>
       <id>atlassian-public-group</id>
       <name>Atlassian public</name>
       <url>https://maven.atlassian.com/content/groups/public/</url>
