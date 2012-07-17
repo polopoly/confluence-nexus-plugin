@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.atex.confluence.plugin</groupId>
   <artifactId>confluence-nexus-plugin</artifactId>
-  <version>1.5.1-SNAPSHOT</version>
+  <version>1.5.0-SNAPSHOT</version>
   
   <organization>
     <name>Atex</name>
@@ -243,9 +243,4 @@
       </reporting>
     </profile>
   </profiles>
-  <scm>
-     <connection>scm:git:git://github.com/polopoly/confluence-nexus-plugin.git</connection>
-     <developerConnection>scm:git:git@github.com:polopoly/confluence-nexus-plugin.git</developerConnection>
-  </scm>
- 
 </project>
