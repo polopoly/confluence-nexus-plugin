@@ -106,11 +106,37 @@
   </properties>
   <repositories>
     <repository>
-      <id>maven.alfresco.com</id>
-      <name>maven.alfresco.com</name>
-      <url>http://maven.alfresco.com/nexus/content/repositories/public</url>
+      <id>atlassian-public-group</id>
+      <name>Atlassian public</name>
+      <url>https://maven.atlassian.com/content/groups/public/</url>
     </repository>
-  </repositories>
+    <repository>
+      <id>atlassian-public</id>
+      <url>https://m2proxy.atlassian.com/repository/public</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+    </repository>
+    </repositories>
+    <pluginRepositories>
+      <pluginRepository>
+        <id>atlassian-public</id>
+        <url>https://m2proxy.atlassian.com/repository/public</url>
+        <releases>
+          <enabled>true</enabled>
+          <checksumPolicy>warn</checksumPolicy>
+        </releases>
+        <snapshots>
+          <checksumPolicy>warn</checksumPolicy>
+        </snapshots>
+      </pluginRepository>
+    </pluginRepositories>
 
   <!--  profiles  -->
   <profiles>
