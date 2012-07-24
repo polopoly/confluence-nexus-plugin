@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.atex.confluence.plugin</groupId>
@@ -106,11 +105,43 @@
   </properties>
   <repositories>
     <repository>
-      <id>maven.alfresco.com</id>
-      <name>maven.alfresco.com</name>
-      <url>http://maven.alfresco.com/nexus/content/repositories/public</url>
+      <!-- For javax.activation-1.0.2 -->
+      <id>polopoly-3rdparty</id>
+      <name>Polopoly third-party</name>
+      <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-3rdparty</url>
+    </repository>
+     <repository>
+      <id>atlassian-public-group</id>
+      <name>Atlassian public</name>
+      <url>https://maven.atlassian.com/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>atlassian-public</id>
+      <url>https://m2proxy.atlassian.com/repository/public</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>atlassian-public</id>
+      <url>https://m2proxy.atlassian.com/repository/public</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <!--  profiles  -->
   <profiles>
