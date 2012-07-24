@@ -202,9 +202,9 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append(getVersion(model));
                 result.append(" ||  Developer(s) | ");
                 result.append(getDeveloperInfo(model.getDevelopers()));
-                result.append("| \n || Supported Polopoly Release | ");
+                result.append("| \n || Minimum Required Version | ");
                 result.append(getSupportedPolopolyRelease(model));
-                result.append(" || Supported Baseline Release | ");
+                result.append(" || Required Baseline Version | ");
                 result.append(getBaselineRelease(model));
                 result.append("| \n || Source Code | ");
                 result.append(getSourceCode(scm));
