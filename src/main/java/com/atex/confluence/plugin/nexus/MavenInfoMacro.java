@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -382,6 +383,8 @@ public class MavenInfoMacro extends BaseMacro {
     }
 
     private String getNexusUrl(Model model) {
+        Configuration configuration = metadataManager.getConfiguration();
+        String nexusLinkPrefix = configuration.getNexusLinkPrefix();
         DistributionManagement distribution = model.getDistributionManagement();
         if(distribution == null) {
             LOGGER.debug("Distribution Management for " + model.toString() + " is not define in pom file.");
@@ -395,7 +398,13 @@ public class MavenInfoMacro extends BaseMacro {
         }
         String groupId = getGroupId(model).replace(".", "/");
         String artifactId = model.getArtifactId().replace(".", "/");
-        String url = repository.getUrl();
+        String url ;
+        if (nexusLinkPrefix==null || nexusLinkPrefix.trim().isEmpty()) {
+            url = repository.getUrl();
+        } else {
+            url = nexusLinkPrefix;
+        }
+
         if(url == null) {
             LOGGER.debug("Deployment Repository's URL for " + model.toString() + " is not define in pom file.");
             return null;

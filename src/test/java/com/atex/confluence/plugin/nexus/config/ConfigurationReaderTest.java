@@ -18,7 +18,7 @@ public class ConfigurationReaderTest {
     
     @Test
     public void testRead() throws IOException {
-        Configuration target = new Configuration("http://thisisnexus.com/nexus", "thisisusername", "thisispassword", "com.example.plugins", true);
+        Configuration target = new Configuration("http://thisisnexus.com/nexus", "thisisusername", "thisispassword", "com.example.plugins", true, "http://nexuslink.com/prefix/");
         AuthScope scope = target.getAuthScope();
         assertEquals("thisisnexus.com", scope.getHost());
         assertEquals(80, scope.getPort());
@@ -29,5 +29,6 @@ public class ConfigurationReaderTest {
         assertEquals("http://thisisnexus.com/nexus", target.getURL());
         assertEquals("http://thisisnexus.com/nexus/service/local/lucene/search", target.getSearchURI());
         assertEquals("http://thisisnexus.com/nexus/service/local/all_repositories", target.getSearchRepositoriesURI());
+        assertEquals("http://nexuslink.com/prefix/", target.getNexusLinkPrefix());
     }
 }

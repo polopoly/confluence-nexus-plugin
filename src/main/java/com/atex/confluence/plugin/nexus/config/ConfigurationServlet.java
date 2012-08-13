@@ -74,6 +74,7 @@ public class ConfigurationServlet extends HttpServlet {
         final String password = req.getParameter("password");
         final String groupId = req.getParameter("groupId");
         final Boolean generateLink = Boolean.valueOf(req.getParameter("generateLink"));
+        final String nexusLinkPrefix = req.getParameter("nexusLinkPrefix");
         
         Map<String, Object> models = new HashMap<String, Object>();
         if (!isValid(urlString)) {
@@ -98,6 +99,7 @@ public class ConfigurationServlet extends HttpServlet {
             configuration.setGenerateLink(generateLink.booleanValue());
             // this is last one to set, which might throw exception
             configuration.setURL(urlString);
+            configuration.setNexusLinkPrefix(nexusLinkPrefix);
         } catch (MalformedURLException e) {
             models.put("urlString", "error");
         }
@@ -121,6 +123,7 @@ public class ConfigurationServlet extends HttpServlet {
                     pluginSettings.put(GROUPID, groupId);
                     // not support Boolean object, need use toString()
                     pluginSettings.put(GENERATE_LINK, generateLink.toString());
+                    pluginSettings.put(NEXUSLINKPREFIX, nexusLinkPrefix);
                     return null;
                 }
             });

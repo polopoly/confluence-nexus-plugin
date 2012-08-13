@@ -13,7 +13,7 @@ public class ConfigurationTest {
     @Before
     public void setUp() throws Exception {
         target = new Configuration("http://urlString.com", 
-                "username","password","groupId",true);
+                "username","password","groupId",true, "http://nexuslink.com/prefix/");
     }
 
     @Test
@@ -61,5 +61,9 @@ public class ConfigurationTest {
         assertEquals("invalid", target.getUrlString());
     }
 
+    @Test
+    public void testGetNexusLinkPrefix() {
+        assertEquals("http://nexuslink.com/prefix/", target.getNexusLinkPrefix());
+    }
 
 }

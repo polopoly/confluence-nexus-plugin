@@ -37,6 +37,11 @@
         </div>
       </div>
       <div>
+        <label for="nexusLinkPrefix">$i18n.getText("nplugin-meta.admin.nexusLinkPrefix")</label><br />
+        <input type="text" id="nexusLinkPrefix" name="nexusLinkPrefix" class="text" value="$!configuration.nexusLinkPrefix" >
+        #if($groupId && $groupId == 'error')<span class="error">$i18n.getText("nplugin-meta.admin.error.nexusLinkPrefix")</span>#end
+      </div>
+      <div>
         <input type="submit" value="$i18n.getText("nplugin-meta.admin.save")" class="button">
       </div>
     </form>
