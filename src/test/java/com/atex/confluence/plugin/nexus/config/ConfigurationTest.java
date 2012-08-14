@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,22 +15,31 @@ public class ConfigurationTest {
     @Before
     public void setUp() throws Exception {
         target = new Configuration("http://urlString.com", 
-                "username","password","groupId",true, "http://nexuslink.com/prefix/");
+                "username","password","groupId", true, "");
+    }
+
+    @Test
+    public void testConfiguration() {
+        Configuration configuration = new Configuration();
+        assertNotNull(configuration);
     }
 
     @Test
     public void testGetUsername() {
-        assertEquals("username", target.getUsername());
+        target.setUsername("otheruser");
+        assertEquals("otheruser", target.getUsername());
     }
 
     @Test
     public void testGetPassword() {
-        assertEquals("password", target.getPassword());
+        target.setPassword("otherpassword");
+        assertEquals("otherpassword", target.getPassword());
     }
 
     @Test
     public void testGetGroupId() {
-        assertEquals("groupId", target.getGroupId());
+        target.setGroupId("othergroupId");
+        assertEquals("othergroupId", target.getGroupId());
     }
 
     @Test
@@ -48,7 +59,8 @@ public class ConfigurationTest {
 
     @Test
     public void testGetURLString() {
-        assertEquals("http://urlString.com", target.getUrlString());
+        target.setUrlString("http://urlStringToo.com");
+        assertEquals("http://urlStringToo.com", target.getUrlString());
     }
 
     @Test
@@ -62,8 +74,38 @@ public class ConfigurationTest {
     }
 
     @Test
+    public void testGenerateLink() {
+        target.setGenerateLink(false);
+        assertFalse(target.isGenerateLink());
+    }
+
+    @Test
+    public void testGetCredential() {
+        UsernamePasswordCredentials credentials = (UsernamePasswordCredentials) target.getCredentials();
+        assertNotNull(credentials);
+        assertEquals("username", credentials.getUserName());
+        assertEquals("password", credentials.getPassword());
+    }
+
+    @Test
+    public void testGetAuthScope() {
+        AuthScope scope = target.getAuthScope();
+        assertEquals("urlstring.com", scope.getHost());
+        assertEquals(80, scope.getPort());
+    }
+
+    @Test
+    public void testGetAuthScopeDefinedPort() throws MalformedURLException {
+        target.setURL("http://urlString.com:8080");
+        AuthScope scope = target.getAuthScope();
+        assertEquals("urlstring.com", scope.getHost());
+        assertEquals(8080, scope.getPort());
+    }
+
+    @Test
     public void testGetNexusLinkPrefix() {
-        assertEquals("http://nexuslink.com/prefix/", target.getNexusLinkPrefix());
+        target.setNexusLinkPrefix("http://nexuslink.com/prefix");
+        assertEquals("http://nexuslink.com/prefix", target.getNexusLinkPrefix());
     }
 
 }

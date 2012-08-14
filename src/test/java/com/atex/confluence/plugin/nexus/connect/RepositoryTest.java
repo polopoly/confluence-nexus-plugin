@@ -26,4 +26,9 @@ public class RepositoryTest {
         assertEquals("repositoryURL", target.getRepositoryURL());
     }
 
+    @Test
+    public void testToString() {
+        String expected = "[repositoryId: repositoryId, repositoryURL: repositoryURL]";
+        assertEquals(expected, target.toString());
+    }
 }

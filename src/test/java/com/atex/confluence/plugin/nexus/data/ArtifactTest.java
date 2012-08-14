@@ -1,12 +1,12 @@
 package com.atex.confluence.plugin.nexus.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.*;
 
 public class ArtifactTest {
 
@@ -14,8 +14,7 @@ public class ArtifactTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        target = spy(new Artifact()) ;
+        target = new Artifact() ;
         target.setGroupId("groupId");
         target.setArtifactId("artifactId");
         target.setVersion("1.0.0");
@@ -23,12 +22,7 @@ public class ArtifactTest {
         target.setLatestReleaseRepositoryId("latestReleaseRepositoryId");
         target.setLatestSnapshot("2.0.1-SNAPSHOT");
         target.setLatestSnapshotRepositoryId("latestSnapshotRepositoryId");
-//        when(target.isSnapshot()).thenReturn(true);
     }
-
-//    private void whenNotSnapshot() {
-//        when(target.isSnapshot()).thenReturn(false);
-//    }
 
     @Test
     public void testGetGroupId() {
@@ -82,4 +76,53 @@ public class ArtifactTest {
         assertFalse(target.isSnapshot());
     }
 
+    @Test
+    public void testToString() {
+        String expected = "[groupId: groupId, artifactId: artifactId, version: 1.0.0, latestSnapshotRepositoryId: latestSnapshotRepositoryId, latestReleaseRepositoryId: latestReleaseRepositoryId, latestRelease: 2.0.0]";
+        assertEquals(expected, target.toString());
+    }
+
+    @Test
+    public void testEqual() {
+        assertTrue(target.equals(target));
+    }
+
+    @Test
+    public void testNotEqualArtifactId() {
+        Artifact another = new Artifact() ;
+        another.setGroupId("groupId");
+        another.setArtifactId("otherartifactId");
+        another.setVersion("1.0.0");
+        assertFalse(target.equals(another));
+    }
+
+    @Test
+    public void testNotEqualGroupId() {
+        Artifact another = new Artifact() ;
+        another.setGroupId("othergroupId");
+        another.setArtifactId("artifactId");
+        another.setVersion("1.0.0");
+        assertFalse(target.equals(another));
+    }
+
+    @Test
+    public void testNotEqualVersion() {
+        Artifact another = new Artifact() ;
+        another.setGroupId("groupId");
+        another.setArtifactId("artifactId");
+        another.setVersion("2.0.0");
+        assertFalse(target.equals(another));
+    }
+
+    @Test
+    public void testNotEqualOtherInstance() {
+        Object object = new Object();
+        assertFalse(target.equals(object));
+    }
+
+    @Test
+    public void testHashCode() {
+        Integer expected = target.hashCode();
+        assertNotNull(expected);
+    }
 }

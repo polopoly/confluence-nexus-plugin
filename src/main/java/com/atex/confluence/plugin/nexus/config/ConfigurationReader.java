@@ -31,11 +31,16 @@ public class ConfigurationReader implements TransactionCallback<Configuration> {
             String groupId = (String)settings.get(GROUPID);
             String nexusLinkPrefix = (String)settings.get(NEXUSLINKPREFIX);
             Boolean generateLink = Boolean.valueOf((String) settings.get(GENERATE_LINK));
-            return new Configuration(urlString, username, password, groupId, generateLink == null? false: generateLink.booleanValue(), nexusLinkPrefix);
+            boolean generateLinkValue = generateLink.booleanValue();
+            return new Configuration(urlString, username, password, groupId, generateLinkValue, nexusLinkPrefix);
         } catch (MalformedURLException ex) {
             // invalid url
             Logger.getLogger(ConfigurationReader.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
         return null;
+    }
+
+    public PluginSettingsFactory getPluginSettingsFactory() {
+        return pluginSettingsFactory;
     }
 }

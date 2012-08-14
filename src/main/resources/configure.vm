@@ -32,14 +32,14 @@
       <div>
         <label for="generateSiteLink">$i18n.getText("nplugin-meta.admin.generateLink")</label><br />
         <input type="checkbox" id="generateLink" name="generateLink" value="true" #if($configuration.generateLink)checked="checked"#end />
+        <div>
+          <label for="nexusLinkPrefix">$i18n.getText("nplugin-meta.admin.nexusLinkPrefix")</label><br />
+          <input type="text" id="nexusLinkPrefix" name="nexusLinkPrefix" class="text" value="$!configuration.nexusLinkPrefix" >
+          #if($nexusLinkPrefix && $nexusLinkPrefix == 'error')<span class="error">$i18n.getText("nplugin-meta.admin.error.nexusLinkPrefix")</span>#end
+        </div>
         <div style="font-size: 0.9em">
           <span>You must install</span><a href="https://github.com/polopoly/nexus-jar-reader-plugin" target="_blank"> this </a><span> Nexus Plugin</span>
         </div>
-      </div>
-      <div>
-        <label for="nexusLinkPrefix">$i18n.getText("nplugin-meta.admin.nexusLinkPrefix")</label><br />
-        <input type="text" id="nexusLinkPrefix" name="nexusLinkPrefix" class="text" value="$!configuration.nexusLinkPrefix" >
-        #if($groupId && $groupId == 'error')<span class="error">$i18n.getText("nplugin-meta.admin.error.nexusLinkPrefix")</span>#end
       </div>
       <div>
         <input type="submit" value="$i18n.getText("nplugin-meta.admin.save")" class="button">

@@ -13,6 +13,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -89,6 +90,9 @@ public class ConfigurationServlet extends HttpServlet {
         if (!isValid(groupId)) {
             models.put("groupId", "error");
         }
+        if (!isWellformedURL(nexusLinkPrefix)) {
+            models.put("nexusLinkPrefix", "error");
+        }
 
         Configuration configuration = null;
         try {
@@ -135,7 +139,18 @@ public class ConfigurationServlet extends HttpServlet {
             renderer.render(VIEW, models, resp.getWriter());
         }
     }
-    
+
+    private boolean isWellformedURL(String nexusLinkPrefix) {
+        if (isValid(nexusLinkPrefix)) {
+            try {
+                new URL(nexusLinkPrefix);
+            } catch (MalformedURLException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean isValid(String value) {
         if (value == null || value.trim().isEmpty()) {
             return false;
