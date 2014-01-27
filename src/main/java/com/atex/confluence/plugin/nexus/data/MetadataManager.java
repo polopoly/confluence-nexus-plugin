@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -52,20 +53,10 @@ public class MetadataManager {
      * @throws IOException when search failed
      */
     public List<ExtendedModel> getMetadatas(String groupId) throws IOException {
-        Response result = getResponse(groupId);
+        Response result = getResponse(groupId, null);
         return getPoms(result.getLatestReleases(), result.getRepositories());
     }
 
-    /**
-     * Search maven model based on artifactId using default groupId
-     * @param artifactId of the maven to be search
-     * @return model of the maven, else null when not found
-     * @throws IOException when search failed
-     */
-//    public Model getMetadata(String artifactId) throws IOException {
-//        return getMetadata(null, artifactId);
-//    }
-    
     /**
      * Search maven model based on groupId and artifactId
      * @param groupId of the artifacts to be search
@@ -75,7 +66,7 @@ public class MetadataManager {
      * @throws IOException when search failed
      */
     public ExtendedModel getMetadata(String groupId, String artifactId, String version) throws IOException {
-        Response result = getResponse(groupId);
+        Response result = getResponse(groupId, artifactId);
         Artifact artifact = result.getByArtifactId(artifactId);
         if(artifact == null) {
             return null;
@@ -90,7 +81,6 @@ public class MetadataManager {
             return null;
         }
     }
-
 
     public List<Repository> getRepositories() throws IOException, ParserConfigurationException, SAXException {
         List<Repository> repositories = new ArrayList<Repository>();
@@ -109,16 +99,23 @@ public class MetadataManager {
         }
         return repositories;
     }
-    
-    private synchronized Response getResponse(String groupId) throws IOException {
+
+    private synchronized Response getResponse(String groupId, String artifactId) throws IOException {
+        HttpMethod get = doGetHttpMethod(getSearchURI(groupId, artifactId));
+        return parseInputStreamToResponse(get.getResponseBodyAsStream());
+    }
+
+    public synchronized String getSearchURI(String groupId, String artifactId) {
         if(groupId == null || groupId.trim().isEmpty()) {
             groupId = configuration.getGroupId();
         }
-        
-        HttpMethod get = doGetHttpMethod(configuration.getSearchURI() + "?g=" + groupId);
-        return parseInputStreamToResponse(get.getResponseBodyAsStream());
+        String searchURI = configuration.getSearchURI() + "?g=" + groupId;
+        if(!StringUtils.isBlank(artifactId)) {
+            searchURI = searchURI + "&a=" + artifactId.trim();
+        }
+        return searchURI;
     }
-    
+
     private Response parseInputStreamToResponse(InputStream inputStream) {
         Response response = new Response();
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -144,7 +141,7 @@ public class MetadataManager {
         }
         return response;
     }
-    
+
     private Repository getRepository(Element el) {
         Repository repository = new Repository();
         repository.setRepositoryId(getTextValue(el, "id"));
@@ -152,7 +149,7 @@ public class MetadataManager {
         
         return repository;
     }
-    
+
     private Artifact getArtifact(Element el) {
         Artifact artifact = new Artifact();
         artifact.setGroupId(getTextValue(el, "groupId"));
@@ -165,7 +162,7 @@ public class MetadataManager {
         
         return artifact;
     }
-    
+
     private String getTextValue(Element ele, String tagName) {
         String textVal = null;
         NodeList nl = ele.getElementsByTagName(tagName);
@@ -175,7 +172,7 @@ public class MetadataManager {
         }
         return textVal;
     }
-    
+
     private List<ExtendedModel> getPoms(List<Artifact> artifacts, List<Repository> repositories) throws IOException {
         List<ExtendedModel> poms = new ArrayList<ExtendedModel>();
         for(Artifact artifact: artifacts) {
@@ -232,7 +229,6 @@ public class MetadataManager {
         return poms;
     }
 
-    
     private HttpMethod doGetHttpMethod(String url) throws IOException {
         HttpMethod get = new GetMethod(url);
         HttpClient client = new HttpClient();
@@ -251,18 +247,6 @@ public class MetadataManager {
             throw new IOException(message);
         }
         return get;
-    }
-
-    private String getUrl(Artifact artifact, List<Repository> repositories) {
-        String groupIdPath = artifact.getGroupId().replace(".", "/");
-        String url = "/" + groupIdPath + "/" + artifact.getArtifactId() + "/" + artifact.getVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getVersion() + ".pom";
-        for(Repository repository: repositories) {
-            if(repository.getRepositoryId().equals(artifact.getLatestReleaseRepositoryId())) {
-                url = repository.getRepositoryURL() + url;
-                break;
-            }
-        }
-        return url;
     }
 
     /**

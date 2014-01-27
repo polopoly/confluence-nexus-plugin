@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -242,7 +241,8 @@ public class MavenInfoMacro extends BaseMacro {
                 result.append("</div>");
                 result.append("{html}");
             } else {
-                result.append("{warning}Metadata model not available{warning}");
+                result.append("{warning}Metadata model not available through search{warning}");
+                result.append(String.format("{html}<p style='color: #666;font-size: .9em;'>For debugging purposes, search URL: %s </p>{html}", metadataManager.getSearchURI(groupId, artifactId)));
             }
         } catch (AddressNotFoundException e) {
             result.append("{warning}Please make sure the Nexus url is correctly configured{warning}");
@@ -280,18 +280,6 @@ public class MavenInfoMacro extends BaseMacro {
             result.append(parseUrlLabel(cim.getSystem(), cim.getUrl()));
         }
         return result.toString();
-    }
-
-    private String getVersions(ExtendedModel model) {
-        StringBuilder builder = new StringBuilder();
-        for(Artifact a: model.getArtifacts()) {
-            if(builder.length() != 0) {
-                builder.append("\n");
-            }
-            builder.append(a.getVersion());
-        }
-        
-        return builder.toString();
     }
 
     /**
@@ -574,7 +562,12 @@ public class MavenInfoMacro extends BaseMacro {
         if (artifactId!=null && !artifactId.isEmpty()) {
             for (Dependency dependency: dependencies) {
                 if (artifactId.trim().equalsIgnoreCase(dependency.getArtifactId().trim())) {
-                    return dependency.getVersion().trim();
+                    //This results in e.g. ${polopoly.version} if read from parent
+                    String dependencyVersion = dependency.getVersion().trim();
+                    if (!org.apache.commons.lang.StringUtils.isBlank(dependencyVersion) 
+                            && !dependencyVersion.startsWith("$")) {
+                        return dependencyVersion;
+                    }
                 }
             }
         }
