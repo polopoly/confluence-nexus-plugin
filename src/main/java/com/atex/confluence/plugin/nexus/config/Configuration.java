@@ -19,20 +19,27 @@ public class Configuration {
     private boolean generateLink = false;
     private String nexusLinkPrefix;
     private URL url;
-    
+    private boolean nexus3 = false;
+
     public static final String NAME_SPACE = Configuration.class.getName() + ".";
     public static final String USERNAME = NAME_SPACE + "username";
     public static final String PASSWORD = NAME_SPACE + "password";
     public static final String URL = NAME_SPACE + "urlString";
     public static final String GROUPID = NAME_SPACE + "groupId";
+    public static final String NEXUS3 = NAME_SPACE + "nexus3";
     public static final String GENERATE_LINK = NAME_SPACE + "generateLink";
     public static final String NEXUSLINKPREFIX = NAME_SPACE + "nexusLinkPrefix";
     
     public Configuration() {
-        
     }
     
-    public Configuration(String urlString, String username, String password, String groupId, boolean generateLink, String nexusLinkPrefix) throws MalformedURLException {
+    public Configuration(final String urlString,
+                         final String username,
+                         final String password,
+                         final String groupId,
+                         final boolean generateLink,
+                         final String nexusLinkPrefix,
+                         final boolean nexus3) throws MalformedURLException {
         this.urlString = urlString;
         this.username = username;
         this.password = password;
@@ -40,6 +47,7 @@ public class Configuration {
         this.url = toURL(urlString);
         this.generateLink = generateLink;
         this.nexusLinkPrefix = nexusLinkPrefix;
+        this.nexus3 = nexus3;
     }
     
     public Credentials getCredentials() {
@@ -108,20 +116,36 @@ public class Configuration {
     public boolean isGenerateLink() {
         return generateLink;
     }
+
     public void setGenerateLink(boolean generateLink) {
         this.generateLink = generateLink;
     }
 
+    public boolean isNexus3() {
+        return nexus3;
+    }
+
+    public void setNexus3(final boolean nexus3) {
+        this.nexus3 = nexus3;
+    }
+
     public String getSearchURI() {
-        return getURL() + "/service/local/lucene/search";
+        if (nexus3) {
+            return getURL() + "/service/rest/v1/search/assets";
+        } else {
+            return getURL() + "/service/local/lucene/search";
+        }
     }
     
     public String getSearchRepositoriesURI() {
-        return getURL() + "/service/local/all_repositories";
+        if (nexus3) {
+            return getURL() + "/service/rest/v1/repositories";
+        } else {
+            return getURL() + "/service/local/all_repositories";
+        }
     }
     
-    private URL toURL(String url) throws MalformedURLException {
-        URL result = new URL(url);
-        return result;
+    private URL toURL(final String url) throws MalformedURLException {
+        return new URL(url);
     }
 }

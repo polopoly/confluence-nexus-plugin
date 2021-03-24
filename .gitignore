@@ -1,6 +1,10 @@
 target/
+.idea/
 .settings/
 .classpath
 .project
 .DS_Store
 amps-standalone
+apache-maven-2.2.1/
+localrepo2/
+dependency-jars/

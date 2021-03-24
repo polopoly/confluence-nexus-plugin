@@ -30,6 +30,10 @@
         #if($groupId && $groupId == 'error')<span class="error">$i18n.getText("nplugin-meta.admin.error.groupId")</span>#end
       </div>
       <div>
+        <label for="nexus3">$i18n.getText("nplugin-meta.admin.nexus3")</label><br />
+        <input type="checkbox" id="nexus3" name="nexus3" value="false" #if($configuration.nexus3)checked="checked"#end />
+      </div>
+      <div>
         <label for="generateSiteLink">$i18n.getText("nplugin-meta.admin.generateLink")</label><br />
         <input type="checkbox" id="generateLink" name="generateLink" value="true" #if($configuration.generateLink)checked="checked"#end />
         <div>

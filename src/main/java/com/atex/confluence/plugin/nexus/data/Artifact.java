@@ -14,6 +14,10 @@ public class Artifact implements Serializable {
     private String groupId;
     private String artifactId;
     private String version;
+    private String type;
+    private String classifier;
+    private String repositoryId;
+    private String url;
     private String latestSnapshot;
     private String latestRelease;
     private String latestReleaseRepositoryId;
@@ -60,7 +64,39 @@ public class Artifact implements Serializable {
     public void setVersion(String version) {
         this.version = version;
     }
-    
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(final String type) {
+        this.type = type;
+    }
+
+    public String getClassifier() {
+        return classifier;
+    }
+
+    public void setClassifier(final String classifier) {
+        this.classifier = classifier;
+    }
+
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    public void setRepositoryId(final String repositoryId) {
+        this.repositoryId = repositoryId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(final String url) {
+        this.url = url;
+    }
+
     /**
      * @return the latestSnapshot
      */

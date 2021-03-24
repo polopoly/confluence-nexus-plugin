@@ -15,7 +15,7 @@ public class ConfigurationTest {
     @Before
     public void setUp() throws Exception {
         target = new Configuration("http://urlString.com", 
-                "username","password","groupId", true, "");
+                "username","password","groupId", true, "", true);
     }
 
     @Test
@@ -106,6 +106,13 @@ public class ConfigurationTest {
     public void testGetNexusLinkPrefix() {
         target.setNexusLinkPrefix("http://nexuslink.com/prefix");
         assertEquals("http://nexuslink.com/prefix", target.getNexusLinkPrefix());
+    }
+
+    @Test
+    public void testNexus3() {
+        assertTrue(target.isNexus3());
+        target.setNexus3(false);
+        assertFalse(target.isNexus3());
     }
 
 }
