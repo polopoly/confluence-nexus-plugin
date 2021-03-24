@@ -9,9 +9,9 @@ Tested on Confluence 4.0 and 3.4.3
 
 Nexus
 =====
-Tested on Nexus 1.9.2.2
-Tested on Nexus 2.x
-Tested on Nexus 3.x
+* Tested on Nexus 1.9.2.2
+* Tested on Nexus 2.x
+* Tested on Nexus 3.x
 
 Compilation
 ===========
@@ -72,6 +72,11 @@ git push
 mvn clean install deploy release:prepare -Pdeploy -DautoVersionSubmodules=true
 mvn clean install deploy release:perform -Pdeploy
 ```
+
+For these two tasks you can use the scripts:
+
+`./releasePrepare.sh <maven settings.xml>`
+`./releasePerform.sh <maven settings.xml>`
 
 ### Cleanup a broken release
 
