@@ -75,8 +75,10 @@ mvn clean install deploy release:perform -Pdeploy
 
 For these two tasks you can use the scripts:
 
-`./releasePrepare.sh <maven settings.xml>`
-`./releasePerform.sh <maven settings.xml>`
+```
+./releasePrepare.sh <maven settings.xml>
+./releasePerform.sh <maven settings.xml>
+```
 
 ### Cleanup a broken release
 
