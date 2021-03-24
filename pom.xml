@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.atex.confluence.plugin</groupId>
   <artifactId>confluence-nexus-plugin</artifactId>
   <version>1.5.2-SNAPSHOT</version>
-  
+
   <organization>
     <name>Atex</name>
     <url>http://www.atex.com/</url>
   </organization>
-  
+
   <name>Nexus Metadata Confluence Tabulator</name>
   <description>This is the com.atex.confluence.plugin:confluence-nexus-plugin for Atlassian Confluence.</description>
   <packaging>atlassian-plugin</packaging>
-  
+
+  <scm>
+    <connection>scm:git:git@github.com:polopoly/confluence-nexus-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:polopoly/confluence-nexus-plugin.git</developerConnection>
+    <url>https://github.com/polopoly/confluence-nexus-plugin</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>com.atlassian.confluence</groupId>
@@ -78,7 +85,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -101,7 +108,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <properties>
     <confluence.version>3.4.3</confluence.version>
     <confluence.data.version>3.1</confluence.data.version>
@@ -124,7 +131,7 @@
     <repository>
       <id>atlassian-external</id>
       <url>https://packages.atlassian.com/maven-external/</url>
-    </repository>    
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -155,7 +162,35 @@
     <!-- deploy profile -->
     <profile>
       <id>deploy</id>
+
+      <distributionManagement>
+        <repository>
+          <uniqueVersion>false</uniqueVersion>
+          <id>polopoly-pd-plugins</id>
+          <name>Polopoly Product Plugins</name>
+          <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins</url>
+          <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+          <uniqueVersion>false</uniqueVersion>
+          <id>polopoly-pd-plugins-snapshots</id>
+          <name>Polopoly Plugin Snapshots</name>
+          <url>http://maven.polopoly.com/nexus/content/repositories/polopoly-pd-plugins-snapshots</url>
+          <layout>default</layout>
+        </snapshotRepository>
+      </distributionManagement>
+
       <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-release-plugin</artifactId>
+              <version>2.5.1</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
         <plugins>
           <!-- bundles the site output into a JAR so that it can be deployed to nexus -->
           <plugin>
