@@ -26,6 +26,8 @@ Release Notes
 
 ## confluence-nexus-plugin-1.5.3
 
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/ad49c4575725039ea5381eafd31b1b972cef4fbe) Fixed https://github.com/advisories/GHSA-269g-pwp5-87pp
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/2dd3795fdbe45854105b6405954d9c6a3f38942e) Added releases notes and deploy procedure.
 - [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/0438a61a63f0f570de8b810350eca7a64eab9994) Fixed pom for releasing the plugin
 - [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/460aafd53eaa1ea1423371ec3084764039a0c123) Now work across nexus 1.x, nexus 2.x and nexus 3.x
 
