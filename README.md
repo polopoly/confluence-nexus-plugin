@@ -24,6 +24,11 @@ since the atlassian repository is not well configured (as of 20210324).
 Release Notes
 =============
 
+## confluence-nexus-plugin-1.5.4
+
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/951025635eae04e6c17f5e0cdc974addb476bf93) Settings are still not saved.
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/297a56b5e1c141bdb4db3e5f7bffe034cee4d6de) [maven-release-plugin] prepare for next development iteration
+
 ## confluence-nexus-plugin-1.5.3
 
 - [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/926ec5bf1f201f374f70bc5500b26e8ba75bc602) The plugin was not saving correctly the new nexus3 property.
