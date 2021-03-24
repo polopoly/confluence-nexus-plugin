@@ -1,5 +1,25 @@
 package com.atex.confluence.plugin.nexus.config;
 
+import static com.atex.confluence.plugin.nexus.config.Configuration.GENERATE_LINK;
+import static com.atex.confluence.plugin.nexus.config.Configuration.GROUPID;
+import static com.atex.confluence.plugin.nexus.config.Configuration.NEXUS3;
+import static com.atex.confluence.plugin.nexus.config.Configuration.NEXUSLINKPREFIX;
+import static com.atex.confluence.plugin.nexus.config.Configuration.PASSWORD;
+import static com.atex.confluence.plugin.nexus.config.Configuration.URL;
+import static com.atex.confluence.plugin.nexus.config.Configuration.USERNAME;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.atex.confluence.plugin.nexus.data.MetadataManager;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
@@ -8,20 +28,6 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static com.atex.confluence.plugin.nexus.config.Configuration.*;
 
 /**
  *
@@ -74,8 +80,9 @@ public class ConfigurationServlet extends HttpServlet {
         final String username = req.getParameter("username");
         final String password = req.getParameter("password");
         final String groupId = req.getParameter("groupId");
-        final Boolean generateLink = Boolean.valueOf(req.getParameter("generateLink"));
+        final boolean generateLink = Boolean.parseBoolean(req.getParameter("generateLink"));
         final String nexusLinkPrefix = req.getParameter("nexusLinkPrefix");
+        final boolean nexus3 = Boolean.parseBoolean(req.getParameter("nexus3"));
         
         Map<String, Object> models = new HashMap<String, Object>();
         if (!isValid(urlString)) {
@@ -100,7 +107,8 @@ public class ConfigurationServlet extends HttpServlet {
             configuration.setUsername(username);
             configuration.setPassword(password);
             configuration.setGroupId(groupId);
-            configuration.setGenerateLink(generateLink.booleanValue());
+            configuration.setGenerateLink(generateLink);
+            configuration.setNexus3(nexus3);
             // this is last one to set, which might throw exception
             configuration.setURL(urlString);
             configuration.setNexusLinkPrefix(nexusLinkPrefix);
@@ -126,7 +134,8 @@ public class ConfigurationServlet extends HttpServlet {
                     pluginSettings.put(PASSWORD, password);
                     pluginSettings.put(GROUPID, groupId);
                     // not support Boolean object, need use toString()
-                    pluginSettings.put(GENERATE_LINK, generateLink.toString());
+                    pluginSettings.put(GENERATE_LINK, Boolean.toString(generateLink));
+                    pluginSettings.put(NEXUS3, Boolean.toString(nexus3));
                     pluginSettings.put(NEXUSLINKPREFIX, nexusLinkPrefix);
                     return null;
                 }
