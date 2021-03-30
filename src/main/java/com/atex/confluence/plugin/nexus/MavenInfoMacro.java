@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DeploymentRepository;
@@ -36,7 +37,6 @@ import com.atex.confluence.plugin.nexus.data.ExtendedModel;
 import com.atex.confluence.plugin.nexus.data.MetadataManager;
 import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
-import com.atlassian.extras.common.org.springframework.util.StringUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.SubRenderer;
@@ -258,7 +258,7 @@ public class MavenInfoMacro extends BaseMacro {
         if(scm != null) {
             String connection = scm.getConnection();
             if(connection != null && !connection.trim().isEmpty()) {
-                if(StringUtils.countOccurrencesOf(connection, ":") > 2) {
+                if(StringUtils.countMatches("connection", ":") > 2) {
                     int index = connection.indexOf(":");
                     connection = connection.substring(index + 1);
                     index = connection.indexOf(":");
