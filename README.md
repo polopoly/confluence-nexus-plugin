@@ -24,6 +24,11 @@ since the atlassian repository is not well configured (as of 20210324).
 Release Notes
 =============
 
+## confluence-nexus-plugin-1.5.5
+
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/6c2116f48ba3564453a49b7f0f5004c61106e704) gson should be embedded in the bundle.
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/8d01b7095f2c20f0bedd69962feb27696706f47d) [maven-release-plugin] prepare for next development iteration
+
 ## confluence-nexus-plugin-1.5.4
 
 - [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/951025635eae04e6c17f5e0cdc974addb476bf93) Settings are still not saved.
