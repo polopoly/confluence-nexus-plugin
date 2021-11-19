@@ -8,13 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.atex.confluence.plugin.nexus.config.Configuration;
@@ -32,7 +31,7 @@ import com.google.gson.JsonParser;
  */
 public class Nexus3MetaManager extends AbstractMetadataManager implements NexusMetadataManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Nexus3MetaManager.class);
+    private static final Logger LOGGER = Logger.getLogger(Nexus3MetaManager.class.getName());
 
     private static final String MAVEN_FORMAT = "maven2";
     private static final String REPOSITORY_ID_PARAM = "&repositoryId=";
@@ -84,6 +83,7 @@ public class Nexus3MetaManager extends AbstractMetadataManager implements NexusM
     @Override
     public Response getResponse(final String groupId,
                                 final String artifactId) throws IOException {
+        LOGGER.info(String.format("get %s:%s", groupId, artifactId));
         final String searchURI = getSearchURI(groupId, artifactId)
                 + "&format=maven2&maven.extension=pom";
         final Response response = new Response();
@@ -95,6 +95,7 @@ public class Nexus3MetaManager extends AbstractMetadataManager implements NexusM
         final Set<String> artifactsSet = new HashSet<String>();
         String uri = searchURI;
         do {
+            LOGGER.info(String.format("fetch %s", uri));
             final HttpMethod get = doGetHttpMethod(uri);
             final String json = get.getResponseBodyAsString();
             final ArtifactsResult results = parseArtifacts(json);
