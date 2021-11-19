@@ -24,6 +24,13 @@ since the atlassian repository is not well configured (as of 20210324).
 Release Notes
 =============
 
+## confluence-nexus-plugin-1.5.6
+
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/8d4ccc766d57c9d072b1152250ad9b32c17c9d85) Added ignore unit test
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/17ab6478eae70b6cc0e50c83c7a25bedd027c1f3) Use java.util.logging so we can see when the plugin is used in tomcat logs.
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/01de44cb33c9e63485c383dce71d60dab6ecc94b) Added missing scripts
+- [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/ac96483a0e379ac7ae7b809154e670330b0dbde5) [maven-release-plugin] prepare for next development iteration
+
 ## confluence-nexus-plugin-1.5.5
 
 - [view commit](https://github.com/polopoly/confluence-nexus-plugin/commit/6c2116f48ba3564453a49b7f0f5004c61106e704) gson should be embedded in the bundle.
